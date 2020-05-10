@@ -8,10 +8,42 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <style>
+        .animated-text {
+        animation: text 10s steps(65) infinite, cursor 0.3s infinite alternate;
+        overflow: hidden;
+        white-space: nowrap;
+        border-right: 3px solid black;
+        padding-right: 10px;
+    }
+
+    @keyframes text {
+        from {
+            width: 0;
+        }
+
+        to {
+            width: 30rem;
+        }
+    }
+
+    @keyframes cursor {
+        from {
+            border-color: transparent;
+            padding-right: 10px;
+        }
+
+        to {
+            border-color: black;
+            padding-right: 10px;
+        }
+    }
+    </style>
 </head>
 
 <body>
     <div class="container text-center">
+        <h6 class="animated-text">Courtesy: @IAmMasterCraft!; @BriefSturvzInitiative</h6>
         <div class="row">
             <div id="parent" class="col-md-6 col-lg-12" style="display: none;"></div>
             <div id="course-list" class="col-md-6 col-lg-12" style="display: none;"></div>
