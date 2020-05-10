@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>TMA</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <div class="container text-center">
+        <div class="row">
+            <div id="parent" class="col-md-6 col-lg-12" style="display: none;"></div>
+            <div id="course-list" class="col-md-6 col-lg-12" style="display: none;"></div>
+            <div id="questions" class="col-md-6 col-lg-12" style="display: none;"></div>
+            <div id="navigation" class="col-md-6 col-lg-12" style="display: none;">
+                <button onclick="gotoPrevPage()">Previous</button>
+                <button onclick="gotoHomePage()">Home</button>
+                <button onclick="gotoNextPage()">Next</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        var availableCourseList = [];
+        var nextPage = "";
+        var prevPage = "";
+        var collection = "";
+
+        Object.objsize = function (Myobj) {
+            var osize = 0,
+                key;
+            for (key in Myobj) {
+                if (Myobj.hasOwnProperty(key)) osize++;
+            }
+            return osize;
+        };
+
+        function getCourses(selectedText, next = "") {
+            // var collection = selectedText.replace(/ /g, "_").toLowerCase();
+            var link = "https://firestore.googleapis.com/v1beta1/projects/exam-76c31/databases/(default)/documents/" + collection + "/" + next;
+            $.get(link, function (result, status, xhr) {
+                // console.log(result);
+                for (let index = 0; index < Object.objsize(result['documents']); index++) {
+                    const element = result['documents'][index];
+                    // console.log(element['stringValue']);
+                    availableCourseList.push(element['name'].substring(element['name'].length - 6, element['name'].length));
+                }
+                nextPage = (typeof result['nextPageToken'] !== "undefined" && result['nextPageToken'] != "") ? "?pageSize=20&pageToken=" + result['nextPageToken'] : "";
+                prevPage = (next != "") ? next : "";
+            });
+        }
+
+        function appendAvailableCourse(courseList) {
+            for (let index = 0; index < courseList.length; index++) {
+                const element = courseList[index];
+                var htmlElement = '<div class="row course-code"><a href="./question.html?module=' + collection + '&amp;course=' + courseList[index] + '"><div class="col-md-6 col-lg-12"><h3>' + element + '</h3></div></a></div>';
+                $("#course-list").append(htmlElement);
+                $("#course-list").show();
+                $("#navigation").show();
+            }
+        }
+
+        // interval for available data
+        var dataClick = setInterval(checkDataList, 3000);
+
+        function checkDataList() {
+            if (availableCourseList.length > 0) {
+                clearInterval(dataClick);
+                appendAvailableCourse(availableCourseList);
+            }
+        }
+
+        function gotoPrevPage() {
+            //
+            var presentUrl =  $(location). attr("href");
+            try {
+                collection = presentUrl.split("?module=")[1];
+                if (prevPage != "") {
+                    $(".course-code").remove();
+                    availableCourseList.splice(0, availableCourseList.length);
+                    dataClick = setInterval(checkDataList, 3000);
+                    getCourses(collection, prevPage);
+                } else {alert("This is the first page!");}
+            } catch (error) {
+                console.log(error);
+                alert("Invalid module selection");
+                $("body").hide();
+            }
+        }
+
+        function gotoHomePage() {
+            //
+            var presentUrl =  $(location). attr("href");
+            try {
+                collection = presentUrl.split("?module=")[1];
+                $(".course-code").remove();
+                availableCourseList.splice(0, availableCourseList.length);
+                dataClick = setInterval(checkDataList, 3000);
+                getCourses(collection);
+            } catch (error) {
+                console.log(error);
+                alert("Invalid module selection");
+                $("body").hide();
+            }
+        }
+
+        function gotoNextPage() {
+            //
+            var presentUrl =  $(location). attr("href");
+            try {
+                collection = presentUrl.split("?module=")[1];
+                if (nextPage != "") {
+                    $(".course-code").remove();
+                    availableCourseList.splice(0, availableCourseList.length);
+                    dataClick = setInterval(checkDataList, 3000);
+                    getCourses(collection, nextPage);
+                } else {alert("No further page ahead!");}
+            } catch (error) {
+                console.log(error);
+                alert("Invalid module selection");
+                $("body").hide();
+            }
+        }
+
+
+        $(document).ready(function () {
+            var presentUrl =  $(location). attr("href");
+            try {
+                collection = presentUrl.split("?module=")[1];
+                getCourses(collection, nextPage);
+            } catch (error) {
+                console.log(error);
+                alert("Invalid module selection");
+                $("body").hide();
+            }
+        });
+    </script>
+</body>
+
+</html>

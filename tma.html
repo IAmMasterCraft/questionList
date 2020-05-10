@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>TMA</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <div class="container text-center">
+        <div class="row">
+            <div id="parent" class="col-md-9"></div>
+            <div id="course-list" class="col-md-3" style="display: none;"></div>
+            <div id="questions" class="col-md-6" style="display: none;"></div>
+            <div id="navigation" class="col-md-6" style="display: none;">
+                <button>Previous</button>
+                <button>Home</button>
+                <button>Next</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        var availableDataList = [];
+        var availableCourseList = [];
+        var availableQuestionList = [];
+        var nextPage = "";
+        var prevPage = "";
+
+        function fetchesAvailableContent() {
+            $.get("https://firestore.googleapis.com/v1beta1/projects/exam-76c31/databases/(default)/documents/links/tma", function (result, status, xhr) {
+                // console.log(result);
+                for (let index = 0; index < Object.objsize(result['fields']); index++) {
+                    const element = result['fields'][index];
+                    // console.log(element['stringValue']);
+                    availableDataList.push(element['stringValue']);
+                }
+            });
+        }
+
+        Object.objsize = function (Myobj) {
+            var osize = 0,
+                key;
+            for (key in Myobj) {
+                if (Myobj.hasOwnProperty(key)) osize++;
+            }
+            return osize;
+        };
+
+        function appendAvailableData(availableData) {
+            for (let index = 0; index < availableData.length; index++) {
+                const element = availableData[index].replace(/_/g, " ").toUpperCase();
+                var htmlElement = '<a href="./course.html?module=' + availableData[index] + '"><div class="col-md-3" onClick=""><h3>' + element + '</h3></div></a>';
+                $("#parent").append(htmlElement);
+            }
+        }
+
+        // interval for available data
+        var dataClick = setInterval(checkDataList, 3000);
+
+        function checkDataList() {
+            if (availableDataList.length > 0) {
+                clearInterval(dataClick);
+                appendAvailableData(availableDataList);
+            }
+        }
+
+        $(document).ready(function () {
+            fetchesAvailableContent();
+        });
+    </script>
+</body>
+
+</html>
