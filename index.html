@@ -44,39 +44,40 @@
 <body>
     <div class="container text-center">
         <h6 class="animated-text">Courtesy: @IAmMasterCraft!; @BriefSturvzInitiative</h6>
-        <div class="row">
-            <div class="col-md-6 col-lg-12">
-                <form>
-                    <h3>Enter Course Code:</h3><br>
-                    <input id="courseCodeParams" class="input-lg" type="text" name="course_code" /><br><br>
-                    <input type="reset" class="btn btn-danger" name="reset" value="RESET" />
-                    <button class="btn btn-success" onclick="searchForCourse($('#courseCodeParams').val())">SEARCH</button>
-                </form>
-            </div>
-        </div>
         <div class="pleaseWait row" style="display: none;">
-            <br>
             <div class="col-md-6 col-lg-12">
                 <img src="./ajax-loader.gif" />
                 <h3>Please Wait!</h3>
             </div>
         </div>
         <div class="row">
-            <div id="parent" class="col-md-6 col-lg-12" style="display: none;"></div>
-            <div id="course-list" class="col-md-6 col-lg-12" style="display: none;"></div>
-            <div id="questions" class="col-md-6 col-lg-12" style="display: none;"></div>
-            <div id="navigation" class="col-md-6 col-lg-12" style="display: none;">
-                <button onclick="gotoPrevPage()">Previous</button>
-                <button onclick="gotoHomePage()">Home</button>
-                <button onclick="gotoNextPage()">Next</button>
+            <div id="parent" class="col-md-9"></div>
+            <div id="course-list" class="col-md-3" style="display: none;"></div>
+            <div id="questions" class="col-md-6" style="display: none;"></div>
+            <div id="navigation" class="col-md-6" style="display: none;">
+                <button>Previous</button>
+                <button>Home</button>
+                <button>Next</button>
             </div>
         </div>
     </div>
     <script>
+        var availableDataList = [];
         var availableCourseList = [];
+        var availableQuestionList = [];
         var nextPage = "";
         var prevPage = "";
-        var collection = "";
+
+        function fetchesAvailableContent() {
+            $.get("https://firestore.googleapis.com/v1beta1/projects/exam-76c31/databases/(default)/documents/links/tma", function (result, status, xhr) {
+                // console.log(result);
+                for (let index = 0; index < Object.objsize(result['fields']); index++) {
+                    const element = result['fields'][index];
+                    // console.log(element['stringValue']);
+                    availableDataList.push(element['stringValue']);
+                }
+            });
+        }
 
         Object.objsize = function (Myobj) {
             var osize = 0,
@@ -87,29 +88,12 @@
             return osize;
         };
 
-        function getCourses(selectedText, next = "") {
-            // var collection = selectedText.replace(/ /g, "_").toLowerCase();
-            var link = "https://firestore.googleapis.com/v1beta1/projects/exam-76c31/databases/(default)/documents/" + collection + "/" + next;
-            $.get(link, function (result, status, xhr) {
-                // console.log(result);
-                for (let index = 0; index < Object.objsize(result['documents']); index++) {
-                    const element = result['documents'][index];
-                    // console.log(element['stringValue']);
-                    availableCourseList.push(element['name'].substring(element['name'].length - 6, element['name'].length));
-                }
-                nextPage = (typeof result['nextPageToken'] !== "undefined" && result['nextPageToken'] != "") ? "?pageSize=20&pageToken=" + result['nextPageToken'] : "";
-                prevPage = (next != "") ? next : "";
-            });
-        }
-
-        function appendAvailableCourse(courseList) {
-            for (let index = 0; index < courseList.length; index++) {
-                const element = courseList[index];
-                var htmlElement = '<div class="row course-code"><a href="./question.html?module=' + collection + '&amp;course=' + courseList[index] + '"><div class="col-md-6 col-lg-12"><h3>' + element + '</h3></div></a></div>';
-                $("#course-list").append(htmlElement);
+        function appendAvailableData(availableData) {
+            for (let index = 0; index < availableData.length; index++) {
+                const element = availableData[index].replace(/_/g, " ").toUpperCase();
+                var htmlElement = '<a href="./course.html?module=' + availableData[index] + '"><div class="col-md-3" onClick=""><h3>' + element + '</h3></div></a>';
                 $(".pleaseWait").hide();
-                $("#course-list").show();
-                $("#navigation").show();
+                $("#parent").append(htmlElement);
             }
         }
 
@@ -117,87 +101,15 @@
         var dataClick = setInterval(checkDataList, 3000);
 
         function checkDataList() {
-            if (availableCourseList.length > 0) {
+            if (availableDataList.length > 0) {
                 clearInterval(dataClick);
-                appendAvailableCourse(availableCourseList);
+                appendAvailableData(availableDataList);
             }
         }
-
-        function gotoPrevPage() {
-            //
-            var presentUrl = $(location).attr("href");
-            try {
-                collection = presentUrl.split("?module=")[1];
-                if (prevPage != "") {
-                    $(".course-code").remove();
-                    $(".pleaseWait").show();
-                    availableCourseList.splice(0, availableCourseList.length);
-                    dataClick = setInterval(checkDataList, 3000);
-                    getCourses(collection, prevPage);
-                } else { alert("This is the first page!"); }
-            } catch (error) {
-                console.log(error);
-                alert("Invalid module selection");
-                $("body").hide();
-            }
-        }
-
-        function searchForCourse(myCourseCodeInput) {
-            var courseCodeInput = myCourseCodeInput.replace(/ /, '');
-            if (courseCodeInput.length == 6 && $.isNumeric(courseCodeInput.substring(3, courseCodeInput.length))) {
-                window.location.href = $(location).attr("href").replace("course", "question")+"&course="+courseCodeInput.toUpperCase();
-            }
-            else {alert(myCourseCodeInput + " is an invalid Course Code \nCourse Code Format: ABC123");}            
-        }
-
-        function gotoHomePage() {
-            //
-            var presentUrl = $(location).attr("href");
-            try {
-                collection = presentUrl.split("?module=")[1];
-                $(".course-code").remove();
-                $(".pleaseWait").show();
-                availableCourseList.splice(0, availableCourseList.length);
-                dataClick = setInterval(checkDataList, 3000);
-                getCourses(collection);
-            } catch (error) {
-                console.log(error);
-                alert("Invalid module selection");
-                $("body").hide();
-            }
-        }
-
-        function gotoNextPage() {
-            //
-            var presentUrl = $(location).attr("href");
-            try {
-                collection = presentUrl.split("?module=")[1];
-                if (nextPage != "") {
-                    $(".course-code").remove();
-                    $(".pleaseWait").show();
-                    availableCourseList.splice(0, availableCourseList.length);
-                    dataClick = setInterval(checkDataList, 3000);
-                    getCourses(collection, nextPage);
-                } else { alert("No further page ahead!"); }
-            } catch (error) {
-                console.log(error);
-                alert("Invalid module selection");
-                $("body").hide();
-            }
-        }
-
 
         $(document).ready(function () {
             $(".pleaseWait").show();
-            var presentUrl = $(location).attr("href");
-            try {
-                collection = presentUrl.split("?module=")[1];
-                getCourses(collection, nextPage);
-            } catch (error) {
-                console.log(error);
-                alert("Invalid module selection");
-                $("body").hide();
-            }
+            fetchesAvailableContent();
         });
     </script>
 </body>
