@@ -10,40 +10,57 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <style>
         .animated-text {
-        animation: text 10s steps(65) infinite, cursor 0.3s infinite alternate;
-        overflow: hidden;
-        white-space: nowrap;
-        border-right: 3px solid black;
-        padding-right: 10px;
-    }
-
-    @keyframes text {
-        from {
-            width: 0;
-        }
-
-        to {
-            width: 30rem;
-        }
-    }
-
-    @keyframes cursor {
-        from {
-            border-color: transparent;
+            animation: text 10s steps(65) infinite, cursor 0.3s infinite alternate;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 3px solid black;
             padding-right: 10px;
         }
 
-        to {
-            border-color: black;
-            padding-right: 10px;
+        @keyframes text {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 30rem;
+            }
         }
-    }
+
+        @keyframes cursor {
+            from {
+                border-color: transparent;
+                padding-right: 10px;
+            }
+
+            to {
+                border-color: black;
+                padding-right: 10px;
+            }
+        }
     </style>
 </head>
 
 <body>
     <div class="container text-center">
         <h6 class="animated-text">Courtesy: @IAmMasterCraft!; @BriefSturvzInitiative</h6>
+        <div class="row">
+            <div class="col-md-6 col-lg-12">
+                <form>
+                    <h3>Enter Course Code:</h3><br>
+                    <input id="courseCodeParams" class="input-lg" type="text" name="course_code" /><br><br>
+                    <input type="reset" class="btn btn-danger" name="reset" value="RESET" />
+                    <button class="btn btn-success" onclick="searchForCourse($('#courseCodeParams').val())">SEARCH</button>
+                </form>
+            </div>
+        </div>
+        <div class="pleaseWait row" style="display: none;">
+            <br>
+            <div class="col-md-6 col-lg-12">
+                <img src="./ajax-loader.gif" />
+                <h3>Please Wait!</h3>
+            </div>
+        </div>
         <div class="row">
             <div id="parent" class="col-md-6 col-lg-12" style="display: none;"></div>
             <div id="course-list" class="col-md-6 col-lg-12" style="display: none;"></div>
@@ -90,6 +107,7 @@
                 const element = courseList[index];
                 var htmlElement = '<div class="row course-code"><a href="./question.html?module=' + collection + '&amp;course=' + courseList[index] + '"><div class="col-md-6 col-lg-12"><h3>' + element + '</h3></div></a></div>';
                 $("#course-list").append(htmlElement);
+                $(".pleaseWait").hide();
                 $("#course-list").show();
                 $("#navigation").show();
             }
@@ -107,15 +125,16 @@
 
         function gotoPrevPage() {
             //
-            var presentUrl =  $(location). attr("href");
+            var presentUrl = $(location).attr("href");
             try {
                 collection = presentUrl.split("?module=")[1];
                 if (prevPage != "") {
                     $(".course-code").remove();
+                    $(".pleaseWait").show();
                     availableCourseList.splice(0, availableCourseList.length);
                     dataClick = setInterval(checkDataList, 3000);
                     getCourses(collection, prevPage);
-                } else {alert("This is the first page!");}
+                } else { alert("This is the first page!"); }
             } catch (error) {
                 console.log(error);
                 alert("Invalid module selection");
@@ -123,12 +142,21 @@
             }
         }
 
+        function searchForCourse(myCourseCodeInput) {
+            var courseCodeInput = myCourseCodeInput.replace(/ /, '');
+            if (courseCodeInput.length == 6 && $.isNumeric(courseCodeInput.substring(3, courseCodeInput.length))) {
+                window.location.href = $(location).attr("href").replace("course", "question")+"&course="+courseCodeInput.toUpperCase();
+            }
+            else {alert(myCourseCodeInput + " is an invalid Course Code \nCourse Code Format: ABC123");}            
+        }
+
         function gotoHomePage() {
             //
-            var presentUrl =  $(location). attr("href");
+            var presentUrl = $(location).attr("href");
             try {
                 collection = presentUrl.split("?module=")[1];
                 $(".course-code").remove();
+                $(".pleaseWait").show();
                 availableCourseList.splice(0, availableCourseList.length);
                 dataClick = setInterval(checkDataList, 3000);
                 getCourses(collection);
@@ -141,15 +169,16 @@
 
         function gotoNextPage() {
             //
-            var presentUrl =  $(location). attr("href");
+            var presentUrl = $(location).attr("href");
             try {
                 collection = presentUrl.split("?module=")[1];
                 if (nextPage != "") {
                     $(".course-code").remove();
+                    $(".pleaseWait").show();
                     availableCourseList.splice(0, availableCourseList.length);
                     dataClick = setInterval(checkDataList, 3000);
                     getCourses(collection, nextPage);
-                } else {alert("No further page ahead!");}
+                } else { alert("No further page ahead!"); }
             } catch (error) {
                 console.log(error);
                 alert("Invalid module selection");
@@ -159,7 +188,8 @@
 
 
         $(document).ready(function () {
-            var presentUrl =  $(location). attr("href");
+            $(".pleaseWait").show();
+            var presentUrl = $(location).attr("href");
             try {
                 collection = presentUrl.split("?module=")[1];
                 getCourses(collection, nextPage);
