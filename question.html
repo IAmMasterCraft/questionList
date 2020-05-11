@@ -10,34 +10,34 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <style>
         .animated-text {
-        animation: text 10s steps(65) infinite, cursor 0.3s infinite alternate;
-        overflow: hidden;
-        white-space: nowrap;
-        border-right: 3px solid black;
-        padding-right: 10px;
-    }
-
-    @keyframes text {
-        from {
-            width: 0;
-        }
-
-        to {
-            width: 30rem;
-        }
-    }
-
-    @keyframes cursor {
-        from {
-            border-color: transparent;
+            animation: text 10s steps(65) infinite, cursor 0.3s infinite alternate;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 3px solid black;
             padding-right: 10px;
         }
 
-        to {
-            border-color: black;
-            padding-right: 10px;
+        @keyframes text {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 30rem;
+            }
         }
-    }
+
+        @keyframes cursor {
+            from {
+                border-color: transparent;
+                padding-right: 10px;
+            }
+
+            to {
+                border-color: black;
+                padding-right: 10px;
+            }
+        }
     </style>
 </head>
 
@@ -45,15 +45,39 @@
     <div class="container text-center">
         <h6 class="animated-text">Courtesy: @IAmMasterCraft!; @BriefSturvzInitiative</h6>
         <div class="row">
+            <div class="col-md-6 col-lg-12">
+                <form>
+                    <h3>Enter Course Code:</h3><br>
+                    <input id="courseCodeParams" class="input-lg" type="text" name="course_code" /><br><br>
+                    <input type="reset" class="btn btn-danger" name="reset" value="RESET" />
+                    <span class="btn btn-success" onclick="searchForCourse($('#courseCodeParams').val())">SEARCH</span>
+                </form>
+            </div>
+        </div>
+        <div class="pleaseWait row" style="display: none;">
+            <br>
+            <div class="col-md-6 col-lg-12">
+                <img src="./ajax-loader.gif" />
+                <h3>Please Wait!</h3>
+            </div>
+        </div>
+        <div class="row">
             <div id="parent" class="col-md-9" style="display: none;"></div>
             <div id="course-list" class="col-md-3" style="display: none;"></div>
             <div id="questions" class="col-md-6" style="display: none;"></div>
+            <div id="notAvailable" class="col-md-6" style="display: none;">
+                <br>
+                <img src="./386.gif" />
+                <h3>For some reason(s) the question list you are looking for could not be found please contact
+                    @IAmMasterCraft!</h3>
+            </div>
         </div>
     </div>
     <script>
         var availableQuestionList = [];
         var collection = "";
         var courseCode = "";
+        var errorStat = [];
 
         Object.objsize = function (Myobj) {
             var osize = 0,
@@ -73,6 +97,7 @@
                     const element = result['fields']["question" + index];
                     // console.log(element['stringValue']);
                     availableQuestionList.push(element['stringValue']);
+                    errorStat.push("No errors");
                 }
             });
         }
@@ -85,8 +110,17 @@
                 process = process.split(" @@@ ");
                 var htmlElement = '<div class="row"><div class="col-md-6 col-lg-12 text-left"><h3>' + (index + 1) + ")." + process[0] + '</h3><h4>' + process[1] + '<br><b>Ans: ' + process[2] + '</b></h4></div></div><hr>';
                 $("#questions").append(htmlElement);
+                $(".pleaseWait").hide();
                 $("#questions").show();
             }
+        }
+
+        function searchForCourse(myCourseCodeInput) {
+            var courseCodeInput = myCourseCodeInput.replace(/ /, '');
+            if (courseCodeInput.length == 6 && $.isNumeric(courseCodeInput.substring(3, courseCodeInput.length))) {
+                window.location.href = $(location).attr("href").replace(/[A-Za-z]{3}[0-9]{3}/, "") + courseCodeInput.toUpperCase();
+            }
+            else { alert(myCourseCodeInput + " is an invalid Course Code \nCourse Code Format: ABC123"); }
         }
 
         // interval for available data
@@ -99,7 +133,16 @@
             }
         }
 
+        var loadError = setTimeout(myErr, 10000);
+        function myErr() {
+            if (availableQuestionList.length == 0) {
+                $("#notAvailable").show();
+                $(".pleaseWait").hide();
+            }
+        }
+
         $(document).ready(function () {
+            $(".pleaseWait").show();
             var presentUrl = $(location).attr("href");
             try {
                 collection = presentUrl.split("?module=")[1].split("&course=")[0];
