@@ -46,12 +46,9 @@
         <h6 class="animated-text">Courtesy: @IAmMasterCraft!; @BriefSturvzInitiative</h6>
         <div class="row">
             <div class="col-md-6 col-lg-12">
-                <form>
-                    <h3>Enter Course Code:</h3><br>
-                    <input id="courseCodeParams" class="input-lg" type="text" name="course_code" /><br><br>
-                    <input type="reset" class="btn btn-danger" name="reset" value="RESET" />
-                    <button class="btn btn-success" onclick="searchForCourse($('#courseCodeParams').val())">SEARCH</button>
-                </form>
+                <h3>Enter Course Code:</h3><br>
+                <input id="courseCodeParams" class="input-lg" type="text" name="course_code" /><br><br>
+                <span class="btn btn-success" onclick="searchForCourse($('#courseCodeParams').val())">SEARCH</span>
             </div>
         </div>
         <div class="pleaseWait row" style="display: none;">
@@ -145,9 +142,9 @@
         function searchForCourse(myCourseCodeInput) {
             var courseCodeInput = myCourseCodeInput.replace(/ /, '');
             if (courseCodeInput.length == 6 && $.isNumeric(courseCodeInput.substring(3, courseCodeInput.length))) {
-                window.location.href = $(location).attr("href").replace("course", "question")+"&course="+courseCodeInput.toUpperCase();
+                window.location.href = $(location).attr("href").replace("course", "question") + "&course=" + courseCodeInput.toUpperCase();
             }
-            else {alert(myCourseCodeInput + " is an invalid Course Code \nCourse Code Format: ABC123");}            
+            else { alert(myCourseCodeInput + " is an invalid Course Code \nCourse Code Format: ABC123"); }
         }
 
         function gotoHomePage() {
