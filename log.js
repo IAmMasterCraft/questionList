@@ -1,4 +1,4 @@
-// Your web app's Firebase configuration
+// Your web app's Firebase configuration.
 var firebaseConfig = {
   apiKey: "AIzaSyBJzRzXvTn8qwbrqQZ9o8fcyVlgHO5cWhM",
   authDomain: "exam-76c31.firebaseapp.com",
