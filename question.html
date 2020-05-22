@@ -130,10 +130,16 @@
             }
         }
 
-        var loadError = setTimeout(myErr, 10000);
+        var loadError = setTimeout(myErr, 3000);
         function myErr() {
             if (availableQuestionList.length == 0) {
-                $("#notAvailable").show();
+                $("#notAvailable").show(function() {
+                    $.post(
+                        "./log.php", {
+                        'action': 'unknown course',
+                        'coursecode': $(location).attr("href").split("?module=")[1].split("&course=")[1]
+                        });
+                });
                 $(".pleaseWait").hide();
             }
         }
