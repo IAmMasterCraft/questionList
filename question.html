@@ -11,6 +11,11 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <style>
+        @media print {
+            html, body {
+               display: none;  /* hide whole page */
+            }
+        }
         .animated-text {
             animation: text 10s steps(65) infinite, cursor 0.3s infinite alternate;
             overflow: hidden;
