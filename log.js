@@ -19,6 +19,8 @@ var collection = "";
 var courseCode = "";
 var errorStat = [];
 
+var noQuestion = ['BUO192'];
+
 Object.objsize = function (Myobj) {
   var osize = 0,
     key;
@@ -108,6 +110,11 @@ function checkDataList() {
 
 var loadError = setTimeout(myErr, 3000);
 function myErr() {
+  if (noQuestion.includes($(location).attr("href").split("?module=")[1].split("&course=")[1])) {
+    $(".pleaseWait").hide();
+    $(".spanError").text("No questions available on " + $(location).attr("href").split("?module=")[1].split("&course=")[1]);
+    return false;
+  }
   if (availableQuestionList.length == 0) {
     $("#notAvailable").show(function () {
       docRef.set({
