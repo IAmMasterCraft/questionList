@@ -119,7 +119,7 @@ function myErr() {
   if (availableQuestionList.length == 0) {
     $("#notAvailable").show(function () {
       docRef.set({
-        notAvailable: new Date(),
+        notAvailable: new Date() + " for " + $(location).attr("href").split("?module=")[1].split("&course=")[0],
       });
     });
     $(".pleaseWait").hide();
