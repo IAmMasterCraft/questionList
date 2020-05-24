@@ -19,7 +19,7 @@ var collection = "";
 var courseCode = "";
 var errorStat = [];
 
-var noQuestion = ['BUO192', 'CIT101', 'EHS206', 'CSS131', 'AFS202', 'INR172', 'FMS105', 'INR152', 'EHS211', 'AGR202', 'EHS212', 'POL204', 'ANP207', 'ESM216', 'ENG172', 'CIT132'];
+var noQuestion = ['BUO192', 'CIT101', 'EHS206', 'CSS131', 'AFS202', 'INR172', 'FMS105', 'INR152', 'EHS211', 'AGR202', 'EHS212', 'POL204', 'ANP207', 'ESM216', 'ENG172', 'CIT132', 'GST102', 'GST202', 'GST105', 'GST302', 'GST104', 'GST204', 'GST107', 'GST707', 'GST807', 'GST101', 'GST201', 'GST103', 'GST203'];
 
 Object.objsize = function (Myobj) {
   var osize = 0,
