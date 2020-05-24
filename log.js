@@ -72,7 +72,7 @@ function appendAvailableCourse(courseList) {
       process[1] +
       "<br><b>Ans: " +
       process[2] +
-      "</b></h4></div></div><hr>";
+      "</b></h4></div></div><span style='float:right; color:red; font-weight: bold; opacity:0.5;'>@IAmMasterCraft</span><hr>";
     $("#questions").append(htmlElement);
     $(".pleaseWait").hide();
     $("#notAvailable").hide();
