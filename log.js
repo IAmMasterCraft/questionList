@@ -113,6 +113,7 @@ function myErr() {
   if (noQuestion.includes($(location).attr("href").split("?module=")[1].split("&course=")[1])) {
     $(".pleaseWait").hide();
     $(".spanError").text("No questions available on " + $(location).attr("href").split("?module=")[1].split("&course=")[1]);
+    $("#notAvailable").show();
     return false;
   }
   if (availableQuestionList.length == 0) {
