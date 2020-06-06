@@ -315,7 +315,7 @@
             } else {expQuest = $(location).attr("href").split("&totQuest=")[1].split("&")[0];}
             
             var tEle = 
-            '<h2 class="text-center">' + expQuest + ' RANDOM QUESTIONS FROM ' + yearSem + ' PAST QUESTIONS</h2><hr>';
+            '<h2 class="text-center">' + expQuest + ' RANDOM QUESTIONS FROM ' + courseCode + " " + yearSem + ' PAST QUESTIONS</h2><hr>';
             $(".practiceTitle").append(tEle);
             $(".pleaseWait").show();
             $(".questionBody").hide();
