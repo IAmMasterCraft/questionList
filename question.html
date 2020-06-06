@@ -12,10 +12,14 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <style>
         @media print {
-            html, body {
-               display: none;  /* hide whole page */
+
+            html,
+            body {
+                display: none;
+                /* hide whole page */
             }
         }
+
         .animated-text {
             animation: text 10s steps(65) infinite, cursor 0.3s infinite alternate;
             overflow: hidden;
@@ -48,7 +52,8 @@
     </style>
 </head>
 
-<body>
+<body oncopy="return false" onpaste="return false" oncut="return false"
+onmousedown="return false" onselectstart="return false">
     <div class="container text-center">
         <h6 class="animated-text">Courtesy: @IAmMasterCraft!; @BriefSturvzInitiative</h6>
         <div class="row">
@@ -68,17 +73,18 @@
         <div class="row">
             <div id="parent" class="col-md-9" style="display: none;"></div>
             <div id="course-list" class="col-md-3" style="display: none;"></div>
-            <div id="questions" oncopy="return false" onpaste="return false" oncut="return false" onmousedown="return false" onselectstart="return false" class="col-md-6" style="display: none;"></div>
+            <div id="questions" oncopy="return false" onpaste="return false" oncut="return false"
+                onmousedown="return false" onselectstart="return false" class="col-md-6" style="display: none;"></div>
             <div id="notAvailable" class="col-md-6" style="display: none;">
                 <br>
                 <img src="./386.gif" />
-                <h3 class="spanError">The question list you are looking for is not available at the moment, please check back in the next 24 hours</h3>
+                <h3 class="spanError">The question list you are looking for is not available at the moment and it might not be available for the next 3-4 days</h3>
             </div>
         </div>
     </div>
     <script src="./log.js"></script>
     <script>
-        
+
     </script>
 </body>
 
