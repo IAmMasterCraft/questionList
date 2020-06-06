@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Companion - Exam Prep</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <style>
+        @media print {
+
+            html,
+            body {
+                display: none;
+                /* hide whole page */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group" style="padding-top: 5%;">
+                    <label for="coursecode">Select Course:</label>
+                    <select class="form-control" id="coursecode" name="courses" onchange="showQType (this.value)">
+                        <option style="font-size: 15px; padding: 2%;" value="--Select One--">--Select One--</option>
+                        <option style="font-size: 15px; padding: 2%;" value="CIT213">CIT213</option>
+                        <option style="font-size: 15px; padding: 2%;" value="CIT237">CIT237</option>
+                    </select>
+                </div>
+                <div class="form-group qType" style="display: none; padding-top: 5%;">
+                    <label for="qType">Select Question Type:</label>
+                    <select class="form-control" id="qType" name="qTypes" onchange="showSemester (this.value)">
+                        <option style="font-size: 15px; padding: 2%;" value="--Select One--">--Select One--</option>
+                        <option style="font-size: 15px; padding: 2%;" value="MCQ">MCQ</option>
+                    </select>
+                </div>
+                <div class="form-group yearSem" style="display: none; padding-top: 5%;">
+                    <label for="yearSem">Select Year/Semester:</label>
+                    <select class="form-control" id="yearSem" name="yearSems" onchange="showNoQuest (this.value)">
+                        <option style="font-size: 15px; padding: 2%;" value="--Select One--">--Select One--</option>
+                        <option style="font-size: 15px; padding: 2%;" value="2019_2">2019/2</option>
+                    </select>
+                </div>
+                <div class="form-group expQuest" style="display: none; padding-top: 5%;">
+                    <label for="yearSem">Select Number of Questions:</label>
+                    <select class="form-control" id="expQuest" name="expQuest" onchange="loadPq (this.value)">
+                        <option style="font-size: 15px; padding: 2%;" value="--Select One--">--Select One--</option>
+                        <option style="font-size: 15px; padding: 2%;" value="10">10 Questions</option>
+                        <option style="font-size: 15px; padding: 2%;" value="20">20 Questions</option>
+                        <option style="font-size: 15px; padding: 2%;" value="35">30 Questions</option>
+                        <option style="font-size: 15px; padding: 2%;" value="All">All Questions</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var courseCode, qType, yearSem, expQuest;
+        function showQType(selectedVal) {
+            if (selectedVal != "--Select One--") {
+                courseCode = selectedVal;
+                $(".qType").show();
+            }
+        }
+
+        function showSemester(selectedVal) {
+            if (selectedVal != "--Select One--") {
+                qType = selectedVal;
+                $(".yearSem").show();
+            }
+        }
+
+        function showNoQuest (selectedVal) {
+            if (selectedVal != "--Select One--") {
+                yearSem = selectedVal;
+                $(".expQuest").show();
+            }
+        }
+
+        function loadPq(selectedVal) {
+            if (selectedVal != "--Select One--") {
+                expQuest = selectedVal;
+                $("#coursecode").val("--Select One--");
+                $("#qType").val("--Select One--");
+                $("#yearSem").val("--Select One--");
+                $("#expQuest").val("--Select One--");
+                window.location.href = $(location).attr("href").split("start")[0] + "index.html?" +
+                "course=" + courseCode +
+                "&type=" + qType +
+                "&yearSem="+yearSem+
+                "&totQuest="+expQuest;
+            }
+        }
+    </script>
+</body>
+
+</html>
