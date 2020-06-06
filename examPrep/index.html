@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Companion - Exam Prep</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <style>
+        @media print {
+
+            html,
+            body {
+                display: none;
+                /* hide whole page */
+            }
+        }
+    </style>
+</head>
+
+<body style="overflow-x: hidden; padding-top: 3%;" oncopy="return false" onpaste="return false" oncut="return false"
+    onmousedown="return false" onselectstart="return false">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <!--title goes down here...-->
+                    <div class="card-body practiceTitle"></div>
+                    <!--pleaseWait goes down here...-->
+                    <div class="pleaseWait card-body" style="display: none;">
+                        <br>
+                        <div class="text-center">
+                            <img src="./ajax-loader.gif" />
+                            <h3>Please Wait!</h3>
+                        </div>
+                    </div>
+                    <div class="card-body questionBody" style="margin-bottom:5%;">
+                        <!--questions goes here...-->
+                    </div>
+                    <!--Score goes down here...-->
+                    <div class="card-body totalScoreBody" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var availableQuestionList = [];
+        var randomQuestionSet = [];
+        // var collection = "";
+        // var courseCode = "";
+        var errorStat = [];
+        var courseCode, qType, yearSem, expQuest;
+        Object.objsize = function (Myobj) {
+            var osize = 0,
+                key;
+            for (key in Myobj) {
+                if (Myobj.hasOwnProperty(key)) osize++;
+            }
+            return osize;
+        };
+        function getQuestions(course, year, type) {
+            // var collection = selectedText.replace(/ /g, "_").toLowerCase();
+            var link =
+                "https://firestore.googleapis.com/v1beta1/projects/exam-76c31/databases/(default)/documents/" +
+                year + type +
+                "/" +
+                course;
+
+            $.ajax({
+                type: "GET",
+                url: link,
+                success: function (result, status, xhr) {
+                    console.log(Object.objsize(result["fields"]));
+                    for (let index = 1; index <= Object.objsize(result["fields"]); index++) {
+                        const element = result["fields"]["question" + index];
+                        // console.log(element['stringValue']);
+                        try {
+                            availableQuestionList.push(element["stringValue"]);
+                            errorStat.push("No errors");
+                        } catch (error) {
+                            console.log(error.message);
+                        }
+
+                        // availableQuestionList.join("\n");
+                    }
+                },
+                error: function () {
+                    /*
+                    if (
+                        noQuestion.includes(
+                        $(location).attr("href").split("?module=")[1].split("&course=")[1]
+                        )
+                    ) {
+                        $(".spanError").text(
+                        "No questions available on " +
+                            $(location).attr("href").split("?module=")[1].split("&course=")[1]
+                        );
+                    }
+                    $("#notAvailable").show(function () {
+                        docRef.set({
+                        notAvailable:
+                            new Date() +
+                            " for " +
+                            $(location).attr("href").split("?module=")[1].split("&course=")[0],
+                        });
+                    });
+                    $(".pleaseWait").hide();
+                    */
+                }
+            });
+        }
+
+        function appendAvailableCourse(courseList, totalQuestionsNeeded) {
+            if (courseList.length > 0) {
+                let index = 0;
+                for (let j = 0; j < totalQuestionsNeeded; j++) {
+                    const element = courseList[j];
+                    myNewProcess = [];
+                    var process = element
+                        .replace(/ \[op/g, "")
+                        .replace(/op\] /g, "")
+                        .replace(/\n/g, "<br>");
+                    process = process.split("@@@");
+                    var optionArr = [process[process.length - 5], process[process.length - 4], process[process.length - 3], process[process.length - 2]];
+                    myNewProcess = randomQuestions(optionArr);
+                    var htmlElement =
+                        "<fieldset>" +
+                        "<legend>" + (index + 1) + ") " + process[0] + "</legend>" +
+                        '<input type="radio" id="opt-a-' + (index + 1) + '" name="q-' + (index + 1) + '-opt" value="' + myNewProcess[myNewProcess.length - 4] + '">' +
+                        '<label for="' + myNewProcess[myNewProcess.length - 4] + '" id="label-a-' + (index + 1) + '" style="padding-left: 3%; font-size: 18px;"> ' + myNewProcess[myNewProcess.length - 4] + '</label><br>' +
+                        '<input type="radio" id="opt-b-' + (index + 1) + '" name="q-' + (index + 1) + '-opt" value="' + myNewProcess[myNewProcess.length - 3] + '">' +
+                        '<label for="' + myNewProcess[myNewProcess.length - 3] + '" id="label-b-' + (index + 1) + '" style="padding-left: 3%; font-size: 18px;"> ' + myNewProcess[myNewProcess.length - 3] + '</label><br>' +
+                        '<input type="radio" id="opt-c-' + (index + 1) + '" name="q-' + (index + 1) + '-opt" value="' + myNewProcess[myNewProcess.length - 2] + '">' +
+                        '<label for="' + myNewProcess[myNewProcess.length - 2] + '" id="label-c-' + (index + 1) + '" style="padding-left: 3%; font-size: 18px;"> ' + myNewProcess[myNewProcess.length - 2] + '</label><br>' +
+                        '<input type="radio" id="opt-d-' + (index + 1) + '" name="q-' + (index + 1) + '-opt" value="' + myNewProcess[myNewProcess.length - 1] + '">' +
+                        '<label for="' + myNewProcess[myNewProcess.length - 1] + '" id="label-d-' + (index + 1) + '" style="padding-left: 3%; font-size: 18px;"> ' + myNewProcess[myNewProcess.length - 1] + '</label><br>' +
+                        '<span class="correct-ans-' + (index + 1) + '" style="display: none;">' + process[process.length - 1] + '</span><br>' +
+                        '</fieldset>';
+                    $(".questionBody").append(htmlElement);
+                    index++;
+                }
+                $(".questionBody").append(
+                    '<button class="btn btn-success" onclick="checkQuestionNotAnswered()">SUBMIT/Shàlàyé</button>'
+                );
+                $(".pleaseWait").hide(function () {
+                    $(".questionBody").show();
+                });
+            }
+        }
+
+        // interval for available data
+        var dataClick = setInterval(checkDataList, 5000);
+
+        function checkDataList() {
+            if (availableQuestionList.length > 0) {
+                clearInterval(dataClick);
+                randomQuestionSet = randomQuestions(availableQuestionList);
+                appendAvailableCourse(randomQuestionSet, expQuest);
+            }
+        }
+
+        //randomizer
+        function randomQuestions(arrToCheckAgainst) {
+            var indices = [];
+            var tempSet = [];
+            while (indices.length < arrToCheckAgainst.length) {
+                var newIndex = Math.floor(Math.random() * 150);
+                if (!indices.includes(newIndex) && indices.length < arrToCheckAgainst.length) {
+                    indices.push(newIndex);
+                }
+            }
+
+            for (let i = 0; i < arrToCheckAgainst.length; i++) {
+                const question = arrToCheckAgainst[i];
+                // console.log(i+"- "+indices[i]);
+                try {
+                    if (question.length > 0) {
+                        tempSet[indices[i]] = question;
+                    }
+                } catch (error) {
+                    console.log(error.message)
+                }
+
+            }
+            return sortRandomizer(tempSet);
+            // console.log(randomQuestionSet.length);
+        }
+
+        function sortRandomizer(tempArr) {
+            var sortedArr = [];
+            tempArr.forEach(element => {
+                if (element.length > 0) {
+                    sortedArr.push(element);
+                }
+            });
+            return sortedArr;
+            // appendAvailableCourse(randomQuestionSet);
+        }
+
+        function checkQuestionNotAnswered() {
+            let i = 1;
+            var noAns = [];
+            while (i <= expQuest) {
+                if (!$("input[name='q-" + i + "-opt']:checked").val()) {
+                    noAns.push("Question " + i + "\n");
+                    // return false;
+                }
+                i++;
+            }
+            if (noAns.length > 0) {
+                // console.log(noAns.join("\n"));
+                alert("Abeg go back and answer the following question(s), you never finish practice:\n" + noAns.join(""));
+            } else {
+                //call marking function
+                // console.log("mark");
+                markAndScore();
+            }
+        }
+
+        function markAndScore() {
+            if ($(".totalScoreBody").text().length == 0) {
+                let totScore = 0;
+                for (let i = 1; i <= expQuest; i++) {
+                    let correctAns = $(".correct-ans-" + i).text().replace(/Ans: /, "");
+                    let selectedAns = $("input[name='q-" + i + "-opt']:checked");
+                    let label = selectedAns.attr("id").replace(/opt/, "label");
+                    if (selectedAns.val() == correctAns) {
+                        //mark as green
+                        $("#" + label).css("color", "green");
+                        //add correct mark icon
+                        $("#" + label).append(
+                            '<i class="fa fa-check"></i>'
+                        );
+                        //increment total by 1
+                        totScore += 1;
+                    } else {
+                        //mark as red
+                        $("#" + label).css("color", "red");
+                        //add wrong mark icon
+                        $("#" + label).append(
+                            '<i class="fa fa-close"></i>'
+                        );
+                        //highlight correct ans
+                        if ($("#" + label.replace(/-[a-z]-/, "-a-")).text().replace(/ /, "") == correctAns) {
+                            $("#" + label.replace(/-[a-z]-/, "-a-")).css("color", "green").append(
+                                '<i class="fa fa-check"></i>'
+                            );
+                        }
+                        if ($("#" + label.replace(/-[a-z]-/, "-b-")).text().replace(/ /, "") == correctAns) {
+                            $("#" + label.replace(/-[a-z]-/, "-b-")).css("color", "green").append(
+                                '<i class="fa fa-check"></i>'
+                            );
+                        }
+                        if ($("#" + label.replace(/-[a-z]-/, "-c-")).text().replace(/ /, "") == correctAns) {
+                            $("#" + label.replace(/-[a-z]-/, "-c-")).css("color", "green").append(
+                                '<i class="fa fa-check"></i>'
+                            );
+                        }
+                        if ($("#" + label.replace(/-[a-z]-/, "-d-")).text().replace(/ /, "") == correctAns) {
+                            $("#" + label.replace(/-[a-z]-/, "-d-")).css("color", "green").append(
+                                '<i class="fa fa-check"></i>'
+                            );
+                        }
+                    }
+                }
+                showScore(totScore);
+            } else {
+                $(".questionBody").hide(function () {
+                    $(".totalScoreBody").show();
+                });
+            }
+        }
+
+        function showScore(totalScore) {
+            var html =
+                '<p class="text-center">Your total score for this practice session is <b>' +
+                totalScore +
+                '</b> out of <b>'+expQuest+'</b><br>' +
+                'If to say this na exam, you don score like <b>' +
+                Math.round((totalScore / (expQuest)) * 100) +
+                '%</b> of your Multiple Choice Questions (MCQ\'s) be that...<br>' +
+                // '<i>IF YOU WAN REASON SOME PQ AND STUDY MORE, VISIT <a href="">"STUDY PAST QUESTIONS"</a></i><br><hr>' +
+                //'<i>IF YOU SURE SAY YOU GET LIVER <a href="">"GO AND PRACTICE FBQ"</a></i><br><hr>' +
+                'BUT YOU FIT <button class="btn btn-warning" onclick="showMyAnswers()">Check Corrections</button><br>'+
+                'OR <a href="./start.html"><button class="btn btn-danger">Restart Practice</button></a>'+
+            '</b></p>'
+            $(".questionBody").hide(function () {
+                $(".totalScoreBody").append(html);
+                $(".totalScoreBody").show();
+            });
+        }
+
+        function showMyAnswers() {
+            $(".questionBody").show(function() {
+                $(".totalScoreBody").hide();
+            });
+        }
+
+        $(document).ready(function () {
+            courseCode = $(location).attr("href").split("?course=")[1].split("&")[0];
+            if ($(location).attr("href").split("&type=")[1].split("&")[0] == "MCQ") {
+                qType = "_pq_objectives";
+            }
+            yearSem = $(location).attr("href").split("&yearSem=")[1].split("&")[0];
+            if ($(location).attr("href").split("&totQuest=")[1].split("&")[0] == "All" && courseCode == "CIT237") {
+                expQuest = 40;
+            }
+            else if ($(location).attr("href").split("&totQuest=")[1].split("&")[0] == "All" && courseCode == "CIT213") {
+                expQuest = 30;
+            } else {expQuest = $(location).attr("href").split("&totQuest=")[1].split("&")[0];}
+            
+            var tEle = 
+            '<h2 class="text-center">' + expQuest + ' RANDOM QUESTIONS FROM ' + yearSem + ' PAST QUESTIONS</h2><hr>';
+            $(".practiceTitle").append(tEle);
+            $(".pleaseWait").show();
+            $(".questionBody").hide();
+            getQuestions(courseCode, yearSem, qType);
+        });
+    </script>
+</body>
+
+</html>
