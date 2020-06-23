@@ -1,12 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-
+<!--
+    TODO: Get izimodal for avalaible courses preview
+    TODO: Get sweet alert for notifications
+    TODO: Get dialog library
+    TODO: Get animated text library
+-->
 <head>
     <title>Companion - Exam Prep</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/icomoon@1.0.0/style.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+    <!-- <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.5.1/js/iziModal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
     <style>
         @media print {
 
@@ -20,7 +31,7 @@
 </head>
 
 <body style="overflow-x: hidden; padding-top: 3%;" oncopy="return false" onpaste="return false" oncut="return false"
-    onmousedown="return false" onselectstart="return false">
+ onselectstart="return false">
     <div class="container">
         <div class="row">
             <div class="col-md-6">
@@ -76,15 +87,14 @@
             // var collection = selectedText.replace(/ /g, "_").toLowerCase();
             var link =
                 "https://firestore.googleapis.com/v1beta1/projects/exam-76c31/databases/(default)/documents/" +
-                year + type +
+                year.replace("/", "_") + type +
                 "/" +
                 course;
-
             $.ajax({
                 type: "GET",
                 url: link,
                 success: function (result, status, xhr) {
-                    console.log(Object.objsize(result["fields"]));
+                    // console.log(Object.objsize(result["fields"]));
                     for (let index = 1; index <= Object.objsize(result["fields"]); index++) {
                         const element = result["fields"]["question" + index];
                         // console.log(element['stringValue']);
@@ -127,29 +137,44 @@
         function appendAvailableCourse(courseList, totalQuestionsNeeded) {
             if (courseList.length > 0) {
                 let index = 0;
-                for (let j = 0; j < totalQuestionsNeeded; j++) {
+                const maxQuestions = (totalQuestionsNeeded == "") ? courseList.length : totalQuestionsNeeded;
+                for (let j = 0; j < maxQuestions; j++) {
                     const element = courseList[j];
-                    myNewProcess = [];
-                    var process = element
-                        .replace(/ \[op/g, "")
-                        .replace(/op\] /g, "")
-                        .replace(/\n/g, "<br>");
-                    process = process.split("@@@");
-                    var optionArr = [process[process.length - 5], process[process.length - 4], process[process.length - 3], process[process.length - 2]];
-                    myNewProcess = randomQuestions(optionArr);
-                    var htmlElement =
-                        "<fieldset>" +
-                        "<legend>" + (index + 1) + ") " + process[0] + "</legend>" +
-                        '<input type="radio" id="opt-a-' + (index + 1) + '" name="q-' + (index + 1) + '-opt" value="' + myNewProcess[myNewProcess.length - 4] + '">' +
-                        '<label for="' + myNewProcess[myNewProcess.length - 4] + '" id="label-a-' + (index + 1) + '" style="padding-left: 3%; font-size: 18px;"> ' + myNewProcess[myNewProcess.length - 4] + '</label><br>' +
-                        '<input type="radio" id="opt-b-' + (index + 1) + '" name="q-' + (index + 1) + '-opt" value="' + myNewProcess[myNewProcess.length - 3] + '">' +
-                        '<label for="' + myNewProcess[myNewProcess.length - 3] + '" id="label-b-' + (index + 1) + '" style="padding-left: 3%; font-size: 18px;"> ' + myNewProcess[myNewProcess.length - 3] + '</label><br>' +
-                        '<input type="radio" id="opt-c-' + (index + 1) + '" name="q-' + (index + 1) + '-opt" value="' + myNewProcess[myNewProcess.length - 2] + '">' +
-                        '<label for="' + myNewProcess[myNewProcess.length - 2] + '" id="label-c-' + (index + 1) + '" style="padding-left: 3%; font-size: 18px;"> ' + myNewProcess[myNewProcess.length - 2] + '</label><br>' +
-                        '<input type="radio" id="opt-d-' + (index + 1) + '" name="q-' + (index + 1) + '-opt" value="' + myNewProcess[myNewProcess.length - 1] + '">' +
-                        '<label for="' + myNewProcess[myNewProcess.length - 1] + '" id="label-d-' + (index + 1) + '" style="padding-left: 3%; font-size: 18px;"> ' + myNewProcess[myNewProcess.length - 1] + '</label><br>' +
-                        '<span class="correct-ans-' + (index + 1) + '" style="display: none;">' + process[process.length - 1] + '</span><br>' +
-                        '</fieldset>';
+                    if (qType == "_pq_objectives") {
+                        myNewProcess = [];
+                        var process = element
+                            .replace(/ \[op/g, "")
+                            .replace(/op\] /g, "")
+                            .replace(/\n/g, "<br>");
+                        process = process.split("@@@");
+                        var optionArr = [process[process.length - 5], process[process.length - 4], process[process.length - 3], process[process.length - 2]];
+                        myNewProcess = randomQuestions(optionArr);
+                        var htmlElement =
+                            "<fieldset>" +
+                            "<legend>" + (index + 1) + ") " + process[0] + "</legend>" +
+                            '<input type="radio" id="opt-a-' + (index + 1) + '" name="q-' + (index + 1) + '-opt" value="' + myNewProcess[myNewProcess.length - 4] + '">' +
+                            '<label for="' + myNewProcess[myNewProcess.length - 4] + '" id="label-a-' + (index + 1) + '" style="padding-left: 3%; font-size: 18px;"> ' + myNewProcess[myNewProcess.length - 4] + '</label><br>' +
+                            '<input type="radio" id="opt-b-' + (index + 1) + '" name="q-' + (index + 1) + '-opt" value="' + myNewProcess[myNewProcess.length - 3] + '">' +
+                            '<label for="' + myNewProcess[myNewProcess.length - 3] + '" id="label-b-' + (index + 1) + '" style="padding-left: 3%; font-size: 18px;"> ' + myNewProcess[myNewProcess.length - 3] + '</label><br>' +
+                            '<input type="radio" id="opt-c-' + (index + 1) + '" name="q-' + (index + 1) + '-opt" value="' + myNewProcess[myNewProcess.length - 2] + '">' +
+                            '<label for="' + myNewProcess[myNewProcess.length - 2] + '" id="label-c-' + (index + 1) + '" style="padding-left: 3%; font-size: 18px;"> ' + myNewProcess[myNewProcess.length - 2] + '</label><br>' +
+                            '<input type="radio" id="opt-d-' + (index + 1) + '" name="q-' + (index + 1) + '-opt" value="' + myNewProcess[myNewProcess.length - 1] + '">' +
+                            '<label for="' + myNewProcess[myNewProcess.length - 1] + '" id="label-d-' + (index + 1) + '" style="padding-left: 3%; font-size: 18px;"> ' + myNewProcess[myNewProcess.length - 1] + '</label><br>' +
+                            '<span class="correct-ans-' + (index + 1) + '" style="display: none;">' + process[process.length - 1] + '</span><br>' +
+                            '</fieldset>';
+                        }
+                    else {
+                        var process = element.split("@@@");
+                        var htmlElement = 
+                            '<fieldset>' +
+                                '<legend>' + (index + 1) + ") " + process[0] + 
+                                    '<br><input type="text" name="q-' + (index + 1) + '-opt" placeholder="Type correct answer for question ' + (index + 1) + ' here!" style="width: 99%;margin-top: 1.5%;" />' +
+                                    '<span class="correct-ans-' + (index + 1) + '" style="display: none;">' + process[process.length - 1].replace("Ans: *", "<br>").slice(0, -1) + '</span>' +
+                                '</legend>' +
+                                
+                                
+                            '</fieldset>'
+                    }
                     $(".questionBody").append(htmlElement);
                     index++;
                 }
@@ -212,19 +237,28 @@
         }
 
         function checkQuestionNotAnswered() {
+            const maxQuestions = (expQuest == "") ? randomQuestionSet.length : expQuest;
             let i = 1;
             var noAns = [];
-            while (i <= expQuest) {
-                if (!$("input[name='q-" + i + "-opt']:checked").val()) {
+            while (i <= maxQuestions) {
+                if (!$("input[name='q-" + i + "-opt']:checked").val() && qType == "_pq_objectives") {
+                    noAns.push("Question " + i + "\n");
+                    // return false;
+                } 
+                else if ($("input[name='q-" + i + "-opt']").val().length <= 0 && qType != "_pq_objectives") {
                     noAns.push("Question " + i + "\n");
                     // return false;
                 }
                 i++;
             }
-            if (noAns.length > 0) {
+            if (noAns.length > 0  && qType == "_pq_objectives") {
                 // console.log(noAns.join("\n"));
                 alert("Abeg go back and answer the following question(s), you never finish practice:\n" + noAns.join(""));
-            } else {
+            } 
+            else if (noAns.length > 0  && qType != "_pq_objectives") {
+                alert("Biko crosscheck again, you never attempt:\n" + noAns.join(""));
+            }
+            else {
                 //call marking function
                 // console.log("mark");
                 markAndScore();
@@ -235,45 +269,60 @@
             if ($(".totalScoreBody").text().length == 0) {
                 let totScore = 0;
                 for (let i = 1; i <= expQuest; i++) {
-                    let correctAns = $(".correct-ans-" + i).text().replace(/Ans: /, "");
-                    let selectedAns = $("input[name='q-" + i + "-opt']:checked");
-                    let label = selectedAns.attr("id").replace(/opt/, "label");
+                    let correctAns = (qType != "_pq_objectives") ? $(".correct-ans-" + i).text() : $(".correct-ans-" + i).text().replace(/Ans: /, "");
+                    let selectedAns = (qType != "_pq_objectives") ? $("input[name='q-" + i + "-opt']") : $("input[name='q-" + i + "-opt']:checked");
+                    let label = (qType != "_pq_objectives") ? $("input[name='q-" + i + "-opt']") : $("#"+selectedAns.attr("id").replace(/opt/, "label"));
                     if (selectedAns.val() == correctAns) {
                         //mark as green
-                        $("#" + label).css("color", "green");
+                        label.css("color", "green");
+                        // $("input[name='q-" + i + "-opt']").css("color", "green");
                         //add correct mark icon
-                        $("#" + label).append(
+                        label.append(
                             '<i class="fa fa-check"></i>'
                         );
+                        // $("input[name='q-" + i + "-opt']").append(
+                        //     '<i class="fa fa-check"></i>'
+                        // );
                         //increment total by 1
                         totScore += 1;
                     } else {
                         //mark as red
-                        $("#" + label).css("color", "red");
+                        label.css("color", "red");
+                        // $("input[name='q-" + i + "-opt']").css("color", "red");
                         //add wrong mark icon
-                        $("#" + label).append(
+                        label.append(
                             '<i class="fa fa-close"></i>'
                         );
-                        //highlight correct ans
-                        if ($("#" + label.replace(/-[a-z]-/, "-a-")).text().replace(/ /, "") == correctAns) {
-                            $("#" + label.replace(/-[a-z]-/, "-a-")).css("color", "green").append(
-                                '<i class="fa fa-check"></i>'
-                            );
+                        // $("input[name='q-" + i + "-opt']").append(
+                        //     '<i class="fa fa-close"></i>'
+                        // );
+                        if (qType == "_pq_objectives") {
+                            //highlight correct ans
+                            if ($("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-a-")).text().replace(/ /, "") == correctAns && qType == "_pq_objectives") {
+                                $("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-a-")).css("color", "green").append(
+                                    '<i class="fa fa-check"></i>'
+                                );
+                            }
+                            if ($("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-b-")).text().replace(/ /, "") == correctAns && qType == "_pq_objectives") {
+                                $("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-b-")).css("color", "green").append(
+                                    '<i class="fa fa-check"></i>'
+                                );
+                            }
+                            if ($("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-c-")).text().replace(/ /, "") == correctAns && qType == "_pq_objectives") {
+                                $("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-c-")).css("color", "green").append(
+                                    '<i class="fa fa-check"></i>'
+                                );
+                            }
+                            if ($("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-d-")).text().replace(/ /, "") == correctAns && qType == "_pq_objectives") {
+                                $("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-d-")).css("color", "green").append(
+                                    '<i class="fa fa-check"></i>'
+                                );
+                            }
                         }
-                        if ($("#" + label.replace(/-[a-z]-/, "-b-")).text().replace(/ /, "") == correctAns) {
-                            $("#" + label.replace(/-[a-z]-/, "-b-")).css("color", "green").append(
+                        if (qType != "_pq_objectives") {
+                            $(".correct-ans-" + i).css("color", "green").append(
                                 '<i class="fa fa-check"></i>'
-                            );
-                        }
-                        if ($("#" + label.replace(/-[a-z]-/, "-c-")).text().replace(/ /, "") == correctAns) {
-                            $("#" + label.replace(/-[a-z]-/, "-c-")).css("color", "green").append(
-                                '<i class="fa fa-check"></i>'
-                            );
-                        }
-                        if ($("#" + label.replace(/-[a-z]-/, "-d-")).text().replace(/ /, "") == correctAns) {
-                            $("#" + label.replace(/-[a-z]-/, "-d-")).css("color", "green").append(
-                                '<i class="fa fa-check"></i>'
-                            );
+                            ).show();
                         }
                     }
                 }
@@ -286,13 +335,15 @@
         }
 
         function showScore(totalScore) {
+            const maxQuestions = (expQuest == "") ? randomQuestionSet.length : expQuest;
+            const tempType = (qType != "_pq_objectives") ? "Fill-in-the-Blank Questions (FBQ\'s)" : "Multiple Choice Questions (MCQ\'s)";
             var html =
                 '<p class="text-center">Your total score for this practice session is <b>' +
                 totalScore +
-                '</b> out of <b>'+expQuest+'</b><br>' +
+                '</b> out of <b>'+maxQuestions+'</b><br>' +
                 'If to say this na exam, you don score like <b>' +
-                Math.round((totalScore / (expQuest)) * 100) +
-                '%</b> of your Multiple Choice Questions (MCQ\'s) be that...<br>' +
+                Math.round((totalScore / (maxQuestions)) * 100) +
+                '%</b> of your ' + tempType + ' be that...<br>' +
                 // '<i>IF YOU WAN REASON SOME PQ AND STUDY MORE, VISIT <a href="">"STUDY PAST QUESTIONS"</a></i><br><hr>' +
                 //'<i>IF YOU SURE SAY YOU GET LIVER <a href="">"GO AND PRACTICE FBQ"</a></i><br><hr>' +
                 'BUT YOU FIT <button class="btn btn-warning" onclick="showMyAnswers()">Check Corrections</button><br><br>'+
@@ -321,19 +372,20 @@
 
         $(document).ready(function () {
             courseCode = $(location).attr("href").split("?course=")[1].split("&")[0];
-            if ($(location).attr("href").split("&type=")[1].split("&")[0] == "MCQ") {
-                qType = "_pq_objectives";
-            }
+            qType = ($(location).attr("href").split("&type=")[1].split("&")[0] == "fbq") ? "_pq_fbq" : "_pq_objectives";
+            
             yearSem = $(location).attr("href").split("&yearSem=")[1].split("&")[0];
-            if ($(location).attr("href").split("&totQuest=")[1].split("&")[0] == "All" && courseCode == "CIT237") {
-                expQuest = 40;
-            }
-            else if ($(location).attr("href").split("&totQuest=")[1].split("&")[0] == "All" && courseCode == "CIT213") {
-                expQuest = 30;
-            } else {expQuest = $(location).attr("href").split("&totQuest=")[1].split("&")[0];}
+            
+            expQuest = ($(location).attr("href").split("&totQuest=")[1].split("&")[0] != "All") ? $(location).attr("href").split("&totQuest=")[1].split("&")[0] : "";
             
             var tEle = 
-            '<h2 class="text-center">' + expQuest + ' RANDOM QUESTIONS FROM ' + courseCode + " " + yearSem + ' PAST QUESTIONS</h2><hr>';
+            '<h2 class="text-center">' 
+                + expQuest 
+                + ' RANDOM QUESTIONS FROM ' 
+                + courseCode 
+                + " " + yearSem + ' ' + 
+                $(location).attr("href").split("&type=")[1].split("&")[0].toUpperCase()
+                +  ' PAST QUESTION</h2><hr>';
             $(".practiceTitle").append(tEle);
             $(".pleaseWait").show();
             $(".questionBody").hide();
