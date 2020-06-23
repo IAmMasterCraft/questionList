@@ -5,6 +5,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/icomoon@1.0.0/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.5.1/css/iziModal.min.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -31,11 +33,10 @@
             <div class="col-md-6">
                 <div class="card">
                     <!--WhatsApp QR goes down here...-->
-                    <div class="card-body contactQr" style="display: none; max-width: 100%; height: 100%; background-color: white;">
+                    <div id="contactModal" style="display: none;" class="card-body contactQr" data-iziModal-fullscreen="true" data-iziModal-title="WhatsApp QR Code"  data-iziModal-subtitle="Contact" data-iziModal-icon="fa fa-pagelines">
                         <br>
                         <div class="text-center">
-                            <i class="fa fa-close fa-4x" style="color: red; font-size: 80px;" onclick="$('.contactQr').hide()"></i> <br>
-                            <img src="./myQrContact.jpeg" style="margin-top: 10%; max-width: 90%; max-height: 80%; "/><hr>
+                            <img src="./myQrContact.jpeg" style="margin-top: 10%; max-width: 50%; "/><hr>
                             <i>Scan this code to contact me Directly on WhatsApp</i>
                         </div>
                     </div>
@@ -53,10 +54,10 @@
                         <!--questions goes here...-->
                     </div>
                     <!--Score goes down here...-->
-                    <div class="card-body totalScoreBody" style="display: none;"></div>
+                    <div class="card-body totalScoreBody" id="scoreModal"  data-iziModal-fullscreen="true" data-iziModal-title="Past Questions Practice Session"  data-iziModal-subtitle="Score" data-iziModal-icon="fa fa-bar-chart-o"></div>
                     <!--whatsapp icon goes down here...-->
                     <div class="card-body whatsApp">
-                        <span style="text-decoration: none; color: #25D366; position: fixed; bottom: 0; right: 0; padding: 3%; z-index: 1;" onclick="showWhatsAppQr()"><i class="fa fa-whatsapp fa-4x"></i></span>
+                        <span style="text-decoration: none; color: #25D366; position: fixed; bottom: 0; right: 0; padding: 3%; z-index: 1;" onclick="$('#contactModal').iziModal('open');"><i class="fa fa-whatsapp fa-4x"></i></span>
                     </div>
                 </div>
             </div>
@@ -176,7 +177,15 @@
                     '<button class="btn btn-success" onclick="checkQuestionNotAnswered()">SUBMIT/Shàlàyé</button>'
                 );
                 $(".pleaseWait").hide(function () {
-                    $(".questionBody").show();
+                    $(".questionBody").show(function() {
+                        notifyNow(
+                            "", (qType != "_pq_objectives") ? "<b style='color: black;'>" + 
+                            courseCode +" Past Questions!</b><br>Start "
+                            + "typing your answers in the appropriate box" : "<b style='color: black;'>" + 
+                            courseCode +" Past Questions!</b><br>Start "
+                            + "selecting the correct options", "success"
+                            );
+                    });
                 });
             }
         }
@@ -247,10 +256,12 @@
             }
             if (noAns.length > 0  && qType == "_pq_objectives") {
                 // console.log(noAns.join("\n"));
-                alert("Abeg go back and answer the following question(s), you never finish practice:\n" + noAns.join(""));
+                // alert("Abeg go back and answer the following question(s), you never finish practice:\n" + noAns.join(""));
+                notifyNow("", "<b style='color: black;'>E be like say you don skip question</b><br>Abeg go back and answer the following question(s), you never finish practice:<br>" + noAns.join("<br>"), "error");
             } 
             else if (noAns.length > 0  && qType != "_pq_objectives") {
-                alert("Biko crosscheck again, you never attempt:\n" + noAns.join(""));
+                // alert("Biko crosscheck again, you never attempt:\n" + noAns.join(""));
+                notifyNow("", "<b style='color: black;'>E be like say you don skip question</b><br>Biko crosscheck again, you never attempt:<br>" + noAns.join("<br>"), "error");
             }
             else {
                 //call marking function
@@ -322,9 +333,10 @@
                 }
                 showScore(totScore);
             } else {
-                $(".questionBody").hide(function () {
-                    $(".totalScoreBody").show();
-                });
+                $("#scoreModal").iziModal("open");
+                // $(".questionBody").hide(function () {
+                //     $(".totalScoreBody").show();
+                // });
             }
         }
 
@@ -342,17 +354,19 @@
                 //'<i>IF YOU SURE SAY YOU GET LIVER <a href="">"GO AND PRACTICE FBQ"</a></i><br><hr>' +
                 'BUT YOU FIT <button class="btn btn-warning" onclick="showMyAnswers()">Check Corrections</button><br><br>'+
                 'OR <a href="./start.html"><button class="btn btn-danger">Restart Practice</button></a>'+
-            '</b></p>'
-            $(".questionBody").hide(function () {
-                $(".totalScoreBody").append(html);
-                $(".totalScoreBody").show();
-            });
+            '</b></p>';
+            $(".totalScoreBody").append(html);
+            $("#scoreModal").iziModal();
+            $("#scoreModal").iziModal("open");
+            notifyNow("", "<b style='color: black;'>"+courseCode+" Submitted!</b><br>Total Score: <b>"+ totalScore +
+                "</b> out of <b>"+maxQuestions+"<br>Total %: " + Math.round((totalScore / (maxQuestions)) * 100) + "%</b>", "success");
         }
 
         function showMyAnswers() {
-            $(".questionBody").show(function() {
-                $(".totalScoreBody").hide();
-            });
+            $("#scoreModal").iziModal("close");
+            // $(".questionBody").show(function() {
+            //     $(".totalScoreBody").hide();
+            // });
         }
 
         function showWhatsAppQr() {
@@ -362,6 +376,50 @@
                 "top": "0",
             });
             $(".contactQr").show();
+        }
+
+        function notifyNow(title, message, action = "info") {
+            switch (action) {
+                case 'info':
+                    iziToast.info({
+                        title: title,
+                        message: message,
+                        timeout: 10000,
+                        position: 'bottomRight',
+                    });
+                    break;
+
+                case 'success':
+                    iziToast.success({
+                        title: title,
+                        message: message,
+                        timeout: 10000,
+                        position: 'bottomRight',
+                    });
+                    break;
+                
+                case 'warning':
+                    iziToast.warning({
+                        title: title,
+                        message: message,
+                        timeout: 10000,
+                        position: 'bottomRight',
+                    });
+                    break;
+
+                case 'error':
+                    iziToast.error({
+                        title: title,
+                        message: message,
+                        timeout: 10000,
+                        position: 'bottomRight',
+                    });
+                    break;
+
+                default:
+                    break;
+            }
+            
         }
 
         $(document).ready(function () {
@@ -384,6 +442,8 @@
             $(".pleaseWait").show();
             $(".questionBody").hide();
             getQuestions(courseCode, yearSem, qType);
+            $("#contactModal").iziModal();
+            // $("#scoreModal").iziModal();
         });
     </script>
 </body>
