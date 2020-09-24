@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <title>Companion - Exam Prep</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -27,129 +26,357 @@
     </style>
 </head>
 
-<body>
+<body style="overflow-x: hidden; padding-top: 3%;" oncopy="return false" onpaste="return false" oncut="return false"
+ onselectstart="return false">
     <div class="container">
         <div class="row">
-            <!-- Modal structure -->
-            <div id="modal" data-iziModal-fullscreen="true" data-iziModal-title="Available Courses"  data-iziModal-subtitle="Past Questions" data-iziModal-icon="fa fa-book">
-                <!-- Modal content -->
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="form-group" style="padding-top: 5%;">
-                    <div class="col-md-4" style="float: right; border: 2px solid green; border-radius: 20px;">
-                        <span class="btn btn-outline-success text-success border border-success" onclick="$('#modal').iziModal('open');"><i class="fa fa-eye"></i> &nbsp; Preview available courses</span>
+            <div class="col-md-6">
+                <div class="card">
+                    <!--WhatsApp QR goes down here...-->
+                    <div id="contactModal" style="display: none;" class="card-body contactQr" data-iziModal-fullscreen="true" data-iziModal-title="WhatsApp QR Code"  data-iziModal-subtitle="Contact" data-iziModal-icon="fa fa-pagelines">
+                        <br>
+                        <div class="text-center">
+                            <img src="./myQrContact.jpeg" style="margin-top: 10%; max-width: 50%; "/><hr>
+                            <i>Scan this code to contact me Directly on WhatsApp</i>
+                        </div>
                     </div>
-                    <label for="coursecode">Select Course:</label><br>
-                    <input type="text" name="courses" id="coursecode" oninput="showSemester (this.value.toUpperCase())">
-                    <!--
-                    <select class="form-control" id="coursecode" name="courses" onchange="showQType (this.value)">
-                        <option style="font-size: 15px; padding: 2%;" value="--Select One--">--Select One--</option>
-                        <option style="font-size: 15px; padding: 2%;" value="CIT213">CIT213</option>
-                        <option style="font-size: 15px; padding: 2%;" value="CIT237">CIT237</option>
-                    </select>
-                    -->
-                </div>
-                <div class="form-group yearSem" style="display: none; padding-top: 5%;">
-                    <label for="yearSem">Select Year/Semester:</label>
-                    <select class="form-control" id="yearSem" name="yearSems" onchange="showQType (this.value)">
-                        <option style="font-size: 15px; padding: 2%;" value="--Select One--">--Select One--</option>
-                    </select>
-                </div>
-                <div class="form-group qType" style="display: none; padding-top: 5%;">
-                    <label for="qType">Select Question Type:</label>
-                    <select class="form-control" id="qType" name="qTypes" onchange="showNoQuest (this.value)">
-                        <option style="font-size: 15px; padding: 2%;" value="--Select One--">--Select One--</option>
-                    </select>
-                </div>
-                
-                <div class="form-group expQuest" style="display: none; padding-top: 5%;">
-                    <label for="yearSem">Select Number of Questions:</label>
-                    <select class="form-control" id="expQuest" name="expQuest" onchange="loadPq (this.value)">
-                        <option style="font-size: 15px; padding: 2%;" value="--Select One--">--Select One--</option>
-                        <option style="font-size: 15px; padding: 2%;" value="10">10 Questions</option>
-                        <option style="font-size: 15px; padding: 2%;" value="20">20 Questions</option>
-                        <option style="font-size: 15px; padding: 2%;" value="35">30 Questions</option>
-                        <option style="font-size: 15px; padding: 2%;" value="All">All Questions</option>
-                    </select>
+                    <!--title goes down here...-->
+                    <div class="card-body practiceTitle"></div>
+                    <!--pleaseWait goes down here...-->
+                    <div class="pleaseWait card-body" style="display: none;">
+                        <br>
+                        <div class="text-center">
+                            <img src="./ajax-loader.gif" />
+                            <h3>Please Wait!</h3>
+                        </div>
+                    </div>
+                    <div class="card-body questionBody" style="margin-bottom:5%;">
+                        <!--questions goes here...-->
+                    </div>
+                    <!--Score goes down here...-->
+                    <div class="card-body totalScoreBody" id="scoreModal"  data-iziModal-fullscreen="true" data-iziModal-title="Past Questions Practice Session"  data-iziModal-subtitle="Score" data-iziModal-icon="fa fa-bar-chart-o"></div>
+                    <!--whatsapp icon goes down here...-->
+                    <div class="card-body whatsApp">
+                        <span style="text-decoration: none; color: #25D366; position: fixed; bottom: 0; right: 0; padding: 3%; z-index: 1;" onclick="$('#contactModal').iziModal('open');"><i class="fa fa-whatsapp fa-4x"></i></span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="./config.js"></script>
     <script>
+        var availableQuestionList = [];
+        var randomQuestionSet = [];
+        // var collection = "";
+        // var courseCode = "";
+        var errorStat = [];
         var courseCode, qType, yearSem, expQuest;
-        function showQType(selectedVal) {
-            yearSem = selectedVal
-            try {
-                let avalQType = Object.keys(courseConfig[courseCode][selectedVal]);
-                if (avalQType.length > 0) {
-                    $("#qType").empty();
-                    var optTags = '<option style="font-size: 15px; padding: 2%;" value="--Select One--">--Select One--</option>;';
-                    avalQType.forEach(function (qt, i) {
-                        optTags +=
-                            '<option style="font-size: 15px; padding: 2%;" value="'
-                            +courseConfig[courseCode][selectedVal][qt]+'">'
-                            +courseConfig[courseCode][selectedVal][qt].toUpperCase()+'</option>';
+        Object.objsize = function (Myobj) {
+            var osize = 0,
+                key;
+            for (key in Myobj) {
+                if (Myobj.hasOwnProperty(key)) osize++;
+            }
+            return osize;
+        };
+        function getQuestions(course, year, type) {
+            // var collection = selectedText.replace(/ /g, "_").toLowerCase();
+            var link =
+                "https://firestore.googleapis.com/v1beta1/projects/exam-76c31/databases/(default)/documents/" +
+                year.replace("/", "_") + type +
+                "/" +
+                course;
+            $.ajax({
+                type: "GET",
+                url: link,
+                success: function (result, status, xhr) {
+                    // console.log(Object.objsize(result["fields"]));
+                    for (let index = 1; index <= Object.objsize(result["fields"]); index++) {
+                        const element = result["fields"]["question" + index];
+                        // console.log(element['stringValue']);
+                        try {
+                            availableQuestionList.push(element["stringValue"]);
+                            errorStat.push("No errors");
+                        } catch (error) {
+                            console.log(error.message);
+                        }
+
+                        // availableQuestionList.join("\n");
+                    }
+                },
+                error: function () {
+                    /*
+                    if (
+                        noQuestion.includes(
+                        $(location).attr("href").split("?module=")[1].split("&course=")[1]
+                        )
+                    ) {
+                        $(".spanError").text(
+                        "No questions available on " +
+                            $(location).attr("href").split("?module=")[1].split("&course=")[1]
+                        );
+                    }
+                    $("#notAvailable").show(function () {
+                        docRef.set({
+                        notAvailable:
+                            new Date() +
+                            " for " +
+                            $(location).attr("href").split("?module=")[1].split("&course=")[0],
+                        });
                     });
-                    $("#qType").append(optTags).prop('selectedIndex', 1);
-                    $(".qType").show(function(){
-                        showNoQuest ($("#qType").val());
+                    $(".pleaseWait").hide();
+                    */
+                }
+            });
+        }
+
+        function appendAvailableCourse(courseList, totalQuestionsNeeded) {
+            if (courseList.length > 0) {
+                let index = 0;
+                const maxQuestions = (totalQuestionsNeeded == "") ? courseList.length : totalQuestionsNeeded;
+                for (let j = 0; j < maxQuestions; j++) {
+                    const element = courseList[j];
+                    if (qType == "_pq_objectives") {
+                        myNewProcess = [];
+                        var process = element
+                            .replace(/ \[op/g, "")
+                            .replace(/op\] /g, "")
+                            .replace(/\n/g, "<br>");
+                        process = process.split("@@@");
+                        var optionArr = [process[process.length - 5], process[process.length - 4], process[process.length - 3], process[process.length - 2]];
+                        myNewProcess = randomQuestions(optionArr);
+                        var htmlElement =
+                            "<fieldset>" +
+                            "<legend>" + (index + 1) + ") " + process[0] + "</legend>" +
+                            '<input type="radio" id="opt-a-' + (index + 1) + '" name="q-' + (index + 1) + '-opt" value="' + myNewProcess[myNewProcess.length - 4] + '">' +
+                            '<label for="' + myNewProcess[myNewProcess.length - 4] + '" id="label-a-' + (index + 1) + '" style="padding-left: 3%; font-size: 18px;"> ' + myNewProcess[myNewProcess.length - 4] + '</label><br>' +
+                            '<input type="radio" id="opt-b-' + (index + 1) + '" name="q-' + (index + 1) + '-opt" value="' + myNewProcess[myNewProcess.length - 3] + '">' +
+                            '<label for="' + myNewProcess[myNewProcess.length - 3] + '" id="label-b-' + (index + 1) + '" style="padding-left: 3%; font-size: 18px;"> ' + myNewProcess[myNewProcess.length - 3] + '</label><br>' +
+                            '<input type="radio" id="opt-c-' + (index + 1) + '" name="q-' + (index + 1) + '-opt" value="' + myNewProcess[myNewProcess.length - 2] + '">' +
+                            '<label for="' + myNewProcess[myNewProcess.length - 2] + '" id="label-c-' + (index + 1) + '" style="padding-left: 3%; font-size: 18px;"> ' + myNewProcess[myNewProcess.length - 2] + '</label><br>' +
+                            '<input type="radio" id="opt-d-' + (index + 1) + '" name="q-' + (index + 1) + '-opt" value="' + myNewProcess[myNewProcess.length - 1] + '">' +
+                            '<label for="' + myNewProcess[myNewProcess.length - 1] + '" id="label-d-' + (index + 1) + '" style="padding-left: 3%; font-size: 18px;"> ' + myNewProcess[myNewProcess.length - 1] + '</label><br>' +
+                            '<span class="correct-ans-' + (index + 1) + '" style="display: none;">' + process[process.length - 1] + '</span><br>' +
+                            '</fieldset>';
+                        }
+                    else {
+                        var process = element.split("@@@");
+                        var htmlElement = 
+                            '<fieldset>' +
+                                '<legend>' + (index + 1) + ") " + process[0] + 
+                                    '<br><input type="text" name="q-' + (index + 1) + '-opt" placeholder="Type correct answer for question ' + (index + 1) + ' here!" style="width: 99%;margin-top: 1.5%;" />' +
+                                    '<span class="correct-ans-' + (index + 1) + '" style="display: none;">' + process[process.length - 1].replace("Ans: *", "<br>").slice(0, -1) + '</span>' +
+                                '</legend>' +
+                                
+                                
+                            '</fieldset>'
+                    }
+                    $(".questionBody").append(htmlElement);
+                    index++;
+                }
+                $(".questionBody").append(
+                    '<button class="btn btn-success" onclick="checkQuestionNotAnswered()">SUBMIT/Shàlàyé</button>'
+                );
+                $(".pleaseWait").hide(function () {
+                    $(".questionBody").show(function() {
+                        notifyNow(
+                            "", (qType != "_pq_objectives") ? "<b style='color: black;'>" + 
+                            courseCode +" Past Questions!</b><br>Start "
+                            + "typing your answers in the appropriate box" : "<b style='color: black;'>" + 
+                            courseCode +" Past Questions!</b><br>Start "
+                            + "selecting the correct options", "success"
+                            );
                     });
-                }
-                else {
-                    notifyNow("Notice",  "No Question type found found for "+courseCode+" in "+selectedVal+"!", "warning")
-                }
-            } catch (error) {
-                console.log(error.message);
+                });
             }
         }
 
-        function showSemester(selectedVal) {
-            courseCode = selectedVal;
-            try {
-                let avalSemester = Object.keys(courseConfig[selectedVal]);
-                var optTags = '<option style="font-size: 15px; padding: 2%;" value="--Select One--">--Select One--</option>;';
-                if (avalSemester.length > 0) {
-                    $("#yearSem").empty();
-                    avalSemester.forEach(function (ys, i) {
-                        optTags +=
-                            '<option style="font-size: 15px; padding: 2%;" value="' 
-                            + ys + '">' 
-                            + ys + '</option>';
-                    });
-                    $("#yearSem").append(optTags).prop('selectedIndex', 1);
-                    $(".yearSem").show(function(){
-                        showQType ($("#yearSem").val());
-                    });
-                }
-                else {
-                    notifyNow("Notice",  "No year found for "+selectedVal+"!", "warning");
-                }
-            } catch (error) {
-                console.log(error.message);
+        // interval for available data
+        var dataClick = setInterval(checkDataList, 5000);
+
+        function checkDataList() {
+            if (availableQuestionList.length > 0) {
+                clearInterval(dataClick);
+                randomQuestionSet = randomQuestions(availableQuestionList);
+                appendAvailableCourse(randomQuestionSet, expQuest);
             }
         }
 
-        function showNoQuest (selectedVal) {
-            if (selectedVal != "--Select One--") {
-                qType = selectedVal;
-                $(".expQuest").show();
+        //randomizer
+        function randomQuestions(arrToCheckAgainst) {
+            var indices = [];
+            var tempSet = [];
+            while (indices.length < arrToCheckAgainst.length) {
+                var newIndex = Math.floor(Math.random() * 150);
+                if (!indices.includes(newIndex) && indices.length < arrToCheckAgainst.length) {
+                    indices.push(newIndex);
+                }
+            }
+
+            for (let i = 0; i < arrToCheckAgainst.length; i++) {
+                const question = arrToCheckAgainst[i];
+                // console.log(i+"- "+indices[i]);
+                try {
+                    if (question.length > 0) {
+                        tempSet[indices[i]] = question;
+                    }
+                } catch (error) {
+                    console.log(error.message)
+                }
+
+            }
+            return sortRandomizer(tempSet);
+            // console.log(randomQuestionSet.length);
+        }
+
+        function sortRandomizer(tempArr) {
+            var sortedArr = [];
+            tempArr.forEach(element => {
+                if (element.length > 0) {
+                    sortedArr.push(element);
+                }
+            });
+            return sortedArr;
+            // appendAvailableCourse(randomQuestionSet);
+        }
+
+        function checkQuestionNotAnswered() {
+            const maxQuestions = (expQuest == "") ? randomQuestionSet.length : expQuest;
+            let i = 1;
+            var noAns = [];
+            while (i <= maxQuestions) {
+                if (!$("input[name='q-" + i + "-opt']:checked").val() && qType == "_pq_objectives") {
+                    noAns.push("Question " + i + "\n");
+                    // return false;
+                } 
+                else if ($("input[name='q-" + i + "-opt']").val().length <= 0 && qType != "_pq_objectives") {
+                    noAns.push("Question " + i + "\n");
+                    // return false;
+                }
+                i++;
+            }
+            if (noAns.length > 0  && qType == "_pq_objectives") {
+                // console.log(noAns.join("\n"));
+                // alert("Abeg go back and answer the following question(s), you never finish practice:\n" + noAns.join(""));
+                notifyNow("", "<b style='color: black;'>E be like say you don skip question</b><br>Abeg go back and answer the following question(s), you never finish practice:<br>" + noAns.join("<br>"), "error");
+            } 
+            else if (noAns.length > 0  && qType != "_pq_objectives") {
+                // alert("Biko crosscheck again, you never attempt:\n" + noAns.join(""));
+                notifyNow("", "<b style='color: black;'>E be like say you don skip question</b><br>Biko crosscheck again, you never attempt:<br>" + noAns.join("<br>"), "error");
+            }
+            else {
+                //call marking function
+                // console.log("mark");
+                markAndScore();
             }
         }
 
-        function loadPq(selectedVal) {
-            if (selectedVal != "--Select One--") {
-                expQuest = selectedVal;
-                $("#coursecode").val("");
-                $("#expQuest").val("--Select One--").change();
-                window.location.href = $(location).attr("href").split("start")[0] + "index.html?" +
-                "course=" + courseCode +
-                "&type=" + qType +
-                "&yearSem="+yearSem+
-                "&totQuest="+expQuest;
+        function markAndScore() {
+            if ($(".totalScoreBody").text().length == 0) {
+                let totScore = 0;
+                for (let i = 1; i <= expQuest; i++) {
+                    let correctAns = (qType != "_pq_objectives") ? $(".correct-ans-" + i).text() : $(".correct-ans-" + i).text().replace(/Ans: /, "");
+                    let selectedAns = (qType != "_pq_objectives") ? $("input[name='q-" + i + "-opt']") : $("input[name='q-" + i + "-opt']:checked");
+                    let label = (qType != "_pq_objectives") ? $("input[name='q-" + i + "-opt']") : $("#"+selectedAns.attr("id").replace(/opt/, "label"));
+                    if (selectedAns.val().toLowerCase() == correctAns.toLowerCase()) {
+                        //mark as green
+                        label.css("color", "green");
+                        // $("input[name='q-" + i + "-opt']").css("color", "green");
+                        //add correct mark icon
+                        label.append(
+                            '<i class="fa fa-check"></i>' +
+                            ''
+                        );
+                        // $("input[name='q-" + i + "-opt']").append(
+                        //     '<i class="fa fa-check"></i>'
+                        // );
+                        //increment total by 1
+                        totScore += 1;
+                    } else {
+                        //mark as red
+                        label.css("color", "red");
+                        // $("input[name='q-" + i + "-opt']").css("color", "red");
+                        //add wrong mark icon
+                        label.append(
+                            '<i class="fa fa-close"></i>'
+                        );
+                        // $("input[name='q-" + i + "-opt']").append(
+                        //     '<i class="fa fa-close"></i>'
+                        // );
+                        if (qType == "_pq_objectives") {
+                            //highlight correct ans
+                            if ($("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-a-")).text().replace(/ /, "") == correctAns && qType == "_pq_objectives") {
+                                $("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-a-")).css("color", "green").append(
+                                    '<i class="fa fa-check"></i>'
+                                );
+                            }
+                            if ($("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-b-")).text().replace(/ /, "") == correctAns && qType == "_pq_objectives") {
+                                $("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-b-")).css("color", "green").append(
+                                    '<i class="fa fa-check"></i>'
+                                );
+                            }
+                            if ($("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-c-")).text().replace(/ /, "") == correctAns && qType == "_pq_objectives") {
+                                $("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-c-")).css("color", "green").append(
+                                    '<i class="fa fa-check"></i>'
+                                );
+                            }
+                            if ($("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-d-")).text().replace(/ /, "") == correctAns && qType == "_pq_objectives") {
+                                $("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-d-")).css("color", "green").append(
+                                    '<i class="fa fa-check"></i>'
+                                );
+                            }
+                        }
+                        if (qType != "_pq_objectives") {
+                            $(".correct-ans-" + i).css("color", "green").append(
+                                '<i class="fa fa-check"></i>'
+                            ).show();
+                        }
+                    }
+                }
+                showScore(totScore);
+            } else {
+                $("#scoreModal").iziModal("open");
+                // $(".questionBody").hide(function () {
+                //     $(".totalScoreBody").show();
+                // });
             }
+        }
+
+        function showScore(totalScore) {
+            const maxQuestions = (expQuest == "") ? randomQuestionSet.length : expQuest;
+            const tempType = (qType != "_pq_objectives") ? "Fill-in-the-Blank Questions (FBQ\'s)" : "Multiple Choice Questions (MCQ\'s)";
+            var html =
+                '<p class="text-center">Your total score for this practice session is <b>' +
+                totalScore +
+                '</b> out of <b>'+maxQuestions+'</b><br>' +
+                'If to say this na exam, you don score like <b>' +
+                Math.round((totalScore / (maxQuestions)) * 100) +
+                '%</b> of your ' + tempType + ' be that...<br>' +
+                // '<i>IF YOU WAN REASON SOME PQ AND STUDY MORE, VISIT <a href="">"STUDY PAST QUESTIONS"</a></i><br><hr>' +
+                //'<i>IF YOU SURE SAY YOU GET LIVER <a href="">"GO AND PRACTICE FBQ"</a></i><br><hr>' +
+                'BUT YOU FIT <button class="btn btn-warning" onclick="showMyAnswers()">Check Corrections</button><br><br>'+
+                'OR <a href="./start.html"><button class="btn btn-danger">Restart Practice</button></a>'+
+            '</b></p>';
+            $(".totalScoreBody").append(html);
+            $("#scoreModal").iziModal();
+            $("#scoreModal").iziModal("open");
+            notifyNow("", "<b style='color: black;'>"+courseCode+" Submitted!</b><br>Total Score: <b>"+ totalScore +
+                "</b> out of <b>"+maxQuestions+"<br>Total %: " + Math.round((totalScore / (maxQuestions)) * 100) + "%</b>", "success");
+        }
+
+        function showMyAnswers() {
+            $("#scoreModal").iziModal("close");
+            // $(".questionBody").show(function() {
+            //     $(".totalScoreBody").hide();
+            // });
+        }
+
+        function showWhatsAppQr() {
+            $(".contactQr").css({
+                "position": "fixed",
+                "z-index": "1",
+                "top": "0",
+            });
+            $(".contactQr").show();
         }
 
         function notifyNow(title, message, action = "info") {
@@ -195,31 +422,29 @@
             }
             
         }
-        
-        notifyNow("", "<b style='color: black;'>Welcome!</b><br>Start by entering course code <br>and select it from dropdown", "success");
 
-        $(function() {
+        $(document).ready(function () {
+            courseCode = $(location).attr("href").split("?course=")[1].split("&")[0];
+            qType = ($(location).attr("href").split("&type=")[1].split("&")[0] == "fbq") ? "_pq_fbq" : "_pq_objectives";
             
-            var cCode = "<ol>";
-            let avalCourseCode = Object.keys(courseConfig);
-            avalCourseCode.sort().forEach(function (cc, i) {
-                cCode += "<li>" + cc + "</li>";
-            });
-            cCode += "</ol>";
-            $("#modal").append(cCode);
-            $("#modal").iziModal();
-            $("#coursecode").autocomplete({
-                source: avalCourseCode,
-                delay: 0,
-                select: function (event, ui) {
-                    showSemester (ui.item.value);
-                },
-                response: function (event, ui) {
-                    if (ui.content.length <= 0) {
-                        notifyNow("Notice",  $("#coursecode").val()+" is not available in the question dataset!", "error");
-                    }
-                },
-            });
+            yearSem = $(location).attr("href").split("&yearSem=")[1].split("&")[0];
+            
+            expQuest = ($(location).attr("href").split("&totQuest=")[1].split("&")[0] != "All") ? $(location).attr("href").split("&totQuest=")[1].split("&")[0] : "";
+            
+            var tEle = 
+            '<h2 class="text-center">' 
+                + expQuest 
+                + ' RANDOM QUESTIONS FROM ' 
+                + courseCode 
+                + " " + yearSem + ' ' + 
+                $(location).attr("href").split("&type=")[1].split("&")[0].toUpperCase()
+                +  ' PAST QUESTION</h2><hr>';
+            $(".practiceTitle").append(tEle);
+            $(".pleaseWait").show();
+            $(".questionBody").hide();
+            getQuestions(courseCode, yearSem, qType);
+            $("#contactModal").iziModal();
+            // $("#scoreModal").iziModal();
         });
     </script>
 </body>
