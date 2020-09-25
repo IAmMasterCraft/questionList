@@ -160,13 +160,14 @@
                         }
                     else {
                         var process = element.split("@@@");
+                        let filteredAnswer = process[process.length - 1].replace("Ans: ", "<br>");
+                        filteredAnswer = filteredAnswer.trim().replace(/\*/g, "");
                         var htmlElement = 
                             '<fieldset>' +
                                 '<legend>' + (index + 1) + ") " + process[0] + 
                                     '<br><input type="text" name="q-' + (index + 1) + '-opt" placeholder="Type correct answer for question ' + (index + 1) + ' here!" style="width: 99%;margin-top: 1.5%;" />' +
-                                    '<span class="correct-ans-' + (index + 1) + '" style="display: none;">' + process[process.length - 1].replace("Ans: *", "<br>").slice(0, -1) + '</span>' +
+                                    '<span class="correct-ans-' + (index + 1) + '" style="display: none;">' + filteredAnswer + '</span>' +
                                 '</legend>' +
-                                
                                 
                             '</fieldset>'
                     }
@@ -277,13 +278,16 @@
                     let correctAns = (qType != "_pq_objectives") ? $(".correct-ans-" + i).text() : $(".correct-ans-" + i).text().replace(/Ans: /, "");
                     let selectedAns = (qType != "_pq_objectives") ? $("input[name='q-" + i + "-opt']") : $("input[name='q-" + i + "-opt']:checked");
                     let label = (qType != "_pq_objectives") ? $("input[name='q-" + i + "-opt']") : $("#"+selectedAns.attr("id").replace(/opt/, "label"));
-                    if (selectedAns.val() == correctAns) {
+                    if (
+                        selectedAns.val().toLowerCase() == correctAns.toLowerCase() || selectedAns.val().toLowerCase().includes(correctAns.toLowerCase())
+                        ) {
                         //mark as green
                         label.css("color", "green");
                         // $("input[name='q-" + i + "-opt']").css("color", "green");
                         //add correct mark icon
                         label.append(
-                            '<i class="fa fa-check"></i>'
+                            '<i class="fa fa-check"></i>' +
+                            ''
                         );
                         // $("input[name='q-" + i + "-opt']").append(
                         //     '<i class="fa fa-check"></i>'
