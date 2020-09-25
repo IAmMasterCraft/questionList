@@ -175,5 +175,29 @@ let courseConfig = {
         '2019/2' : ['fbq'],
     },
 
+    'CIT102' : {
+        '2019/2' : ['fbq', 'objectives'],
+    },
+
+    'ECO121' : {
+        '2019/2' : ['fbq'],
+    },
+
+    'CSS133' : {
+        '2019/2' : ['fbq'],
+    },
+
+    'CSS111' : {
+        '2019/2' : ['fbq', 'objectives'],
+    },
+
+    'GST201' : {
+        '2019/2' : ['fbq', 'objectives'],
+    },
+
+    'GST103' : {
+        '2019/2' : ['fbq', 'objectives'],
+    },
+
 }
 
