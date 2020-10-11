@@ -385,7 +385,7 @@
             const qPerHour = Math.round(timer.getTotalTimeValues().hours / totalQuestions);
             const qPerMin = Math.round(timer.getTotalTimeValues().minutes / totalQuestions);
             const qPerSecs = Math.round(timer.getTotalTimeValues().seconds / totalQuestions);
-            return `On the average you dey answer ${qPerSecs} question(s) per second`;
+            // return `On the average you dey answer ${qPerSecs} question(s) per second`;
             if(qPerDay > 0) {
                 return `On the average you dey answer ${qPerDay} question(s) per day`;
             }
@@ -444,8 +444,8 @@
             $("#scoreModal").iziModal("open");
             notifyNow("", 
                 "<b style='color: black;'>"+courseCode+" Submitted!</b><br>" +
-                "Time: <b>" + $('.timeValues').text() + "</b>" +
-                "Average Time: <b>" + getAverageTime(maxQuestions).split("answer")[1] +"</b>" +
+                "Time: <b>" + $('.timeValues').text() + "</b><br>" +
+                "Average Time: <b>" + getAverageTime(maxQuestions).split("answer")[1] +"</b><br>" +
                 "Total Score: <b>"+ totalScore + "</b> out of <b>"+maxQuestions+
                 "<br>Total %: " + Math.round((totalScore / (maxQuestions)) * 100) + "%</b>", "success"
                 );
