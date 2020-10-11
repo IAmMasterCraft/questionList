@@ -282,6 +282,10 @@
                     if (
                         selectedAns.val().toLowerCase() == correctAns.toLowerCase() || selectedAns.val().toLowerCase().includes(correctAns.toLowerCase())
                         ) {
+                        //show option for fbq
+                            (qType != "_pq_objectives") ? $(".correct-ans-" + i).css("color", "green").append(
+                                '<i class="fa fa-check"></i>'
+                            ).show() : "";
                         //mark as green
                         label.css("color", "green");
                         // $("input[name='q-" + i + "-opt']").css("color", "green");
