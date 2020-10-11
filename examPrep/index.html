@@ -426,8 +426,8 @@
             const maxQuestions = (expQuest == "") ? randomQuestionSet.length : expQuest;
             const tempType = (qType != "_pq_objectives") ? "Fill-in-the-Blank Questions (FBQ\'s)" : "Multiple Choice Questions (MCQ\'s)";
             var html =
-                '<p>' + timeSpent(maxQuestions) + '</p>' +
-                '<p>' + getAverageTime(maxQuestions) + '</p>' +
+                '<p class="text-center">' + timeSpent(maxQuestions) + '</p>' +
+                '<p class="text-center">' + getAverageTime(maxQuestions) + '</p>' +
                 '<p class="text-center">Your total score for this practice session is <b>' +
                 totalScore +
                 '</b> out of <b>'+maxQuestions+'</b><br>' +
