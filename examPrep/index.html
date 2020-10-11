@@ -381,10 +381,10 @@
 
 
         const getAverageTime = (totalQuestions) => {
-            const qPerDay = Math.round(totalQuestions / timer.getTotalTimeValues().days);
-            const qPerHour = Math.round(totalQuestions / timer.getTotalTimeValues().hours);
-            const qPerMin = Math.round(totalQuestions / timer.getTotalTimeValues().minutes);
-            const qPerSecs = Math.round(totalQuestions / timer.getTotalTimeValues().seconds);
+            const qPerDay = Math.round(timer.getTotalTimeValues().days / totalQuestions);
+            const qPerHour = Math.round(timer.getTotalTimeValues().hours / totalQuestions);
+            const qPerMin = Math.round(timer.getTotalTimeValues().minutes / totalQuestions);
+            const qPerSecs = Math.round(timer.getTotalTimeValues().seconds / totalQuestions);
             return `On the average you dey answer ${qPerSecs} question(s) per second`;
             if(qPerDay > 0) {
                 return `On the average you dey answer ${qPerDay} question(s) per day`;
