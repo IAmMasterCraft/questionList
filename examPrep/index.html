@@ -387,16 +387,16 @@
             const qPerSecs = Math.round(timer.getTotalTimeValues().seconds / totalQuestions);
             // return `On the average you dey answer ${qPerSecs} question(s) per second`;
             if(qPerDay > 0) {
-                return `On the average you dey answer ${qPerDay} question(s) per day`;
+                return `On the average you dey answer ${qPerDay} day(s) per question`;
             }
             else if(qPerHour > 0) {
-                return `On the average you dey answer ${qPerHour} question(s) per hour`;
+                return `On the average you dey answer ${qPerHour} hour(s) per question`;
             }
             else if(qPerMin > 0) {
-                return `On the average you dey answer ${qPerMin} question(s) per minute`;
+                return `On the average you dey answer ${qPerMin} minute(s) per question`;
             }
             else if(qPerSecs > 0) {
-                return `On the average you dey answer ${qPerSecs} question(s) per second`;
+                return `On the average you dey answer ${qPerSecs} second(s) per question`;
             }
         }
 
