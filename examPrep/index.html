@@ -60,11 +60,24 @@
                     <div class="card-body whatsApp">
                         <span style="text-decoration: none; color: #25D366; position: fixed; bottom: 0; right: 0; padding: 3%; z-index: 1;" onclick="$('#contactModal').iziModal('open');"><i class="fa fa-whatsapp fa-4x"></i></span>
                     </div>
+                    <!-- Timer goes down here -->
+                    <div id="myTimer">
+                        <div class="timeValues" 
+                        style="font-weight: bold; 
+                            font-size: medium; 
+                            border: 3px solid #25D366; 
+                            border-radius: 10%; 
+                            background-color: rgba(255, 255, 255, 0.5); 
+                            position: fixed; top: 0; right: 0; 
+                            padding: 1.5%; 
+                            z-index: 1;">00:00:00</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <script>
+        const timer = new Timer();
         var availableQuestionList = [];
         var randomQuestionSet = [];
         // var collection = "";
@@ -175,6 +188,7 @@
                     $(".questionBody").append(htmlElement);
                     index++;
                 }
+                startTimer();
                 $(".questionBody").append(
                     '<button class="btn btn-success" onclick="checkQuestionNotAnswered()">SUBMIT/Shàlàyé</button>'
                 );
@@ -190,6 +204,19 @@
                     });
                 });
             }
+        }
+
+        // function to append question to body and start timer
+        const startTimer = () => {
+            
+            try {
+                timer.start();
+            } catch (error) {
+                console.error(error.message);
+            }
+            timer.addEventListener('secondsUpdated', (e) => {
+                $('.timeValues').html(timer.getTimeValues().toString());
+            });
         }
 
         // interval for available data
@@ -283,7 +310,7 @@
                     if (
                         selectedAns.val().toLowerCase() == correctAns.toLowerCase() || selectedAns.val().toLowerCase().includes(correctAns.toLowerCase())
                         ) {
-                        //show option for fbq
+                            //show option for fbq
                             (qType != "_pq_objectives") ? $(".correct-ans-" + i).css("color", "green").append(
                                 '<i class="fa fa-check"></i>'
                             ).show() : "";
@@ -341,6 +368,8 @@
                         }
                     }
                 }
+                //pause timer
+                timer.pause()
                 showScore(totScore);
             } else {
                 $("#scoreModal").iziModal("open");
@@ -350,10 +379,55 @@
             }
         }
 
+
+        const getAverageTime = (totalQuestions) => {
+            const qPerDay = Math.round(totalQuestions / timer.getTotalTimeValues().days);
+            const qPerHour = Math.round(totalQuestions / timer.getTotalTimeValues().hours);
+            const qPerMin = Math.round(totalQuestions / timer.getTotalTimeValues().minutes);
+            const qPerSecs = Math.round(totalQuestions / timer.getTotalTimeValues().seconds);
+            return `On the average you dey answer ${qPerSecs} question(s) per second`;
+            if(qPerDay > 0) {
+                return `On the average you dey answer ${qPerDay} question(s) per day`;
+            }
+            else if(qPerHour > 0) {
+                return `On the average you dey answer ${qPerHour} question(s) per hour`;
+            }
+            else if(qPerMin > 0) {
+                return `On the average you dey answer ${qPerMin} question(s) per minute`;
+            }
+            else if(qPerSecs > 0) {
+                return `On the average you dey answer ${qPerSecs} question(s) per second`;
+            }
+        }
+
+        const timeSpent = (totalQuestions) => {
+            const days = timer.getTimeValues().days;
+            const hours = timer.getTimeValues().hours;
+            const mins = timer.getTimeValues().minutes;
+            const secs = timer.getTimeValues().seconds;
+            if (days != 0) {
+                return `You spent a total of ${days} day(s), ${hours} hours, ${mins} minutes and ${secs} second(s) on ${totalQuestions}.`;
+            }
+            else if (hours != 0) {
+                return `You spent a total of ${hours} hours, ${mins} minutes and ${secs} second(s) on ${totalQuestions}.`;
+            }
+            else if (mins != 0) {
+                return `You spent a total of ${mins} minutes and ${secs} second(s) on ${totalQuestions}.`;
+            }
+            else if (secs != 0) {
+                return `You spent a total of ${secs} second(s) on ${totalQuestions}.`;
+            }
+            else {
+                return "How you take do am? Your timer no dey run...";
+            }
+        }
+
         function showScore(totalScore) {
             const maxQuestions = (expQuest == "") ? randomQuestionSet.length : expQuest;
             const tempType = (qType != "_pq_objectives") ? "Fill-in-the-Blank Questions (FBQ\'s)" : "Multiple Choice Questions (MCQ\'s)";
             var html =
+                '<p>' + timeSpent(maxQuestions) + '</p>' +
+                '<p>' + getAverageTime(maxQuestions) + '</p>' +
                 '<p class="text-center">Your total score for this practice session is <b>' +
                 totalScore +
                 '</b> out of <b>'+maxQuestions+'</b><br>' +
@@ -368,8 +442,14 @@
             $(".totalScoreBody").append(html);
             $("#scoreModal").iziModal();
             $("#scoreModal").iziModal("open");
-            notifyNow("", "<b style='color: black;'>"+courseCode+" Submitted!</b><br>Total Score: <b>"+ totalScore +
-                "</b> out of <b>"+maxQuestions+"<br>Total %: " + Math.round((totalScore / (maxQuestions)) * 100) + "%</b>", "success");
+            notifyNow("", 
+                "<b style='color: black;'>"+courseCode+" Submitted!</b><br>" +
+                "Time: <b>" + $('.timeValues').text() + "</b>" +
+                "Average Time: <b>" + getAverageTime(maxQuestions).split("answer")[1] +"</b>" +
+                "Total Score: <b>"+ totalScore + "</b> out of <b>"+maxQuestions+
+                "<br>Total %: " + Math.round((totalScore / (maxQuestions)) * 100) + "%</b>", "success"
+                );
+            timer.stop();
         }
 
         function showMyAnswers() {
