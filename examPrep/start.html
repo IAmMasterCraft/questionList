@@ -99,7 +99,7 @@
                         optTags +=
                             '<option style="font-size: 15px; padding: 2%;" value="'
                             +courseConfig[courseCode][selectedVal][qt]+'">'
-                            +courseConfig[courseCode][selectedVal][qt].toUpperCase()+'</option>';
+                            +courseConfig[courseCode][selectedVal][qt].toUpperCase().replace(/_/g, " ")+'</option>';
                     });
                     $("#qType").append(optTags).prop('selectedIndex', 1);
                     $(".qType").show(function(){
