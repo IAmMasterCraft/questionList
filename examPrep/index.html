@@ -99,6 +99,13 @@
                 year.replace("/", "_") + type +
                 "/" +
                 course;
+            
+            //manage other question bank
+            if (type.includes("question_bank")) {
+                link = "https://firestore.googleapis.com/v1beta1/projects/exam-76c31/databases/(default)/documents/" + type +
+                "/" +
+                course;
+            }
             $.ajax({
                 type: "GET",
                 url: link,
@@ -144,7 +151,7 @@
         }
 
         function appendAvailableCourse(courseList, totalQuestionsNeeded) {
-            if (courseList.length > 0) {
+            if (courseList.length > 0 && totalQuestionsNeeded <= courseList.length) {
                 let index = 0;
                 const maxQuestions = (totalQuestionsNeeded == "") ? courseList.length : totalQuestionsNeeded;
                 for (let j = 0; j < maxQuestions; j++) {
@@ -265,6 +272,10 @@
                 }
             });
             expQuest = (expQuest.length === 0) ? sortedArr.length : expQuest;
+            // in case of in casity
+            if (expQuest > sortedArr.length) {
+                expQuest = sortedArr.length
+            }
             return sortedArr;
             // appendAvailableCourse(randomQuestionSet);
         }
@@ -406,16 +417,16 @@
             const mins = timer.getTimeValues().minutes;
             const secs = timer.getTimeValues().seconds;
             if (days != 0) {
-                return `You spent a total of ${days} day(s), ${hours} hours, ${mins} minutes and ${secs} second(s) on ${totalQuestions}.`;
+                return `You spent a total of ${days} day(s), ${hours} hours, ${mins} minute(s) and ${secs} second(s) on ${totalQuestions} questions.`;
             }
             else if (hours != 0) {
-                return `You spent a total of ${hours} hours, ${mins} minutes and ${secs} second(s) on ${totalQuestions}.`;
+                return `You spent a total of ${hours} hours, ${mins} minute(s) and ${secs} second(s) on ${totalQuestions} questions.`;
             }
             else if (mins != 0) {
-                return `You spent a total of ${mins} minutes and ${secs} second(s) on ${totalQuestions}.`;
+                return `You spent a total of ${mins} minute(s) and ${secs} second(s) on ${totalQuestions} questions.`;
             }
             else if (secs != 0) {
-                return `You spent a total of ${secs} second(s) on ${totalQuestions}.`;
+                return `You spent a total of ${secs} second(s) on ${totalQuestions} questions.`;
             }
             else {
                 return "How you take do am? Your timer no dey run...";
@@ -445,9 +456,9 @@
             notifyNow("", 
                 "<b style='color: black;'>"+courseCode+" Submitted!</b><br>" +
                 "Time: <b>" + $('.timeValues').text() + "</b><br>" +
-                "Average Time: <b>" + getAverageTime(maxQuestions).split("answer")[1] +"</b><br>" +
+                "Average Time: <b>" + getAverageTime(maxQuestions).split("average")[1] +"</b><br>" +
                 "Total Score: <b>"+ totalScore + "</b> out of <b>"+maxQuestions+
-                "<br>Total %: " + Math.round((totalScore / (maxQuestions)) * 100) + "%</b>", "success"
+                "</b><br>Total %: <b>" + Math.round((totalScore / (maxQuestions)) * 100) + "%</b>", "success"
                 );
             timer.stop();
         }
@@ -512,25 +523,42 @@
             
         }
 
+        const questionType = () => {
+            let myType;
+            if ($(location).attr("href").split("&type=")[1].split("&")[0].includes("question_bank")) {
+                myType = $(location).attr("href").split("&type=")[1].split("&")[0];
+            }
+            else if ($(location).attr("href").split("&type=")[1].split("&")[0] == "fbq") {
+                myType = "_pq_fbq";
+            } 
+            else {
+                myType = "_pq_objectives";
+            }
+            return myType;
+        }
+
         $(document).ready(function () {
             courseCode = $(location).attr("href").split("?course=")[1].split("&")[0];
-            qType = ($(location).attr("href").split("&type=")[1].split("&")[0] == "fbq") ? "_pq_fbq" : "_pq_objectives";
+            qType = questionType();
             
             yearSem = $(location).attr("href").split("&yearSem=")[1].split("&")[0];
             
             expQuest = ($(location).attr("href").split("&totQuest=")[1].split("&")[0] != "All") ? $(location).attr("href").split("&totQuest=")[1].split("&")[0] : "";
             
+            qType = (qType.includes("bank")) ? '' : qType.toUpperCase().replace(/_/g, " ");
+
             var tEle = 
             '<h2 class="text-center">' 
                 + expQuest 
                 + ' RANDOM QUESTIONS FROM ' 
                 + courseCode 
-                + " " + yearSem + ' ' + 
-                $(location).attr("href").split("&type=")[1].split("&")[0].toUpperCase()
+                + " " + yearSem.replace(/%20/g, " ") + ' ' + 
+                qType
                 +  ' PAST QUESTION</h2><hr>';
             $(".practiceTitle").append(tEle);
             $(".pleaseWait").show();
             $(".questionBody").hide();
+            qType = questionType();
             getQuestions(courseCode, yearSem, qType);
             $("#contactModal").iziModal();
             // $("#scoreModal").iziModal();
