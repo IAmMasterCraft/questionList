@@ -125,6 +125,7 @@ let courseConfig = {
     
     'CIT211' : {
         '2019/2' : ['fbq', 'objectives'],
+        'QUESTION BANKS' : ['question_bank_1', 'question_bank_2', 'question_bank_3', 'question_bank_4', 'question_bank_5', 'question_bank_6', 'question_bank_7', 'question_bank_8'],
     },
     
     'CIT213' : {
@@ -193,6 +194,7 @@ let courseConfig = {
 
     'GST201' : {
         '2019/2' : ['fbq', 'objectives'],
+        'QUESTION BANKS' : ['question_bank_1', 'question_bank_2', 'question_bank_3', 'question_bank_4', 'question_bank_5', 'question_bank_6', 'question_bank_7', 'question_bank_8', 'question_bank_9'],
     },
 
     'GST103' : {
