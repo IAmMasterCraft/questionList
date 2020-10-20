@@ -86,7 +86,7 @@
         var courseCode, qType, yearSem, expQuest;
         const manageExpQuest = () => {
     const totQ = expQuest = ($(location).attr("href").split("&totQuest=")[1].split("&")[0] != "All") ? $(location).attr("href").split("&totQuest=")[1].split("&")[0] : "";
-    if (totQ > availableQuestionList.length) {
+    if (totQ > availableQuestionList.length || totQ == "All") {
                 totQ = availableQuestionList.length
             }
 return totQ;
