@@ -84,6 +84,13 @@
         // var courseCode = "";
         var errorStat = [];
         var courseCode, qType, yearSem, expQuest;
+        const manageExpQuest = () => {
+    const totQ = expQuest = ($(location).attr("href").split("&totQuest=")[1].split("&")[0] != "All") ? $(location).attr("href").split("&totQuest=")[1].split("&")[0] : "";
+    if (totQ > availableQuestionList.length) {
+                totQ = availableQuestionList.length
+            }
+return totQ;
+}
         Object.objsize = function (Myobj) {
             var osize = 0,
                 key;
@@ -314,6 +321,7 @@
         function markAndScore() {
             if ($(".totalScoreBody").text().length == 0) {
                 let totScore = 0;
+                expQuest = manageExpQuest();
                 for (let i = 1; i <= expQuest; i++) {
                     let correctAns = (qType != "_pq_objectives") ? $(".correct-ans-" + i).text() : $(".correct-ans-" + i).text().replace(/Ans: /, "");
                     let selectedAns = (qType != "_pq_objectives") ? $("input[name='q-" + i + "-opt']") : $("input[name='q-" + i + "-opt']:checked");
