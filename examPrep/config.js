@@ -130,6 +130,7 @@ let courseConfig = {
     
     'CIT213' : {
         '2019/2' : ['fbq', 'objectives'],
+        'QUESTION BANKS' : ['question_bank_1'],
     },
 
     'CIT215' : {
@@ -207,6 +208,11 @@ let courseConfig = {
 
     'PCR115' : {
         '2019/2' : ['fbq'],
+    },
+
+    'GST203' : {
+        '2019/2' : ['fbq', 'objectives'],
+        'QUESTION BANKS' : ['question_bank_1', 'question_bank_2', 'question_bank_3', 'question_bank_4', 'question_bank_5', 'question_bank_6', 'question_bank_7', 'question_bank_8', 'question_bank_9', 'question_bank_10'],
     },
 
 }
