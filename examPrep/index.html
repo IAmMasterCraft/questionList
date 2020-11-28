@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Companion - Exam Prep</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -17,7 +18,6 @@
     <script src="https://cdn.jsdelivr.net/npm/easytimer@1.1.1/src/easytimer.min.js"></script>
     <style>
         @media print {
-
             html,
             body {
                 display: none;
@@ -27,17 +27,17 @@
     </style>
 </head>
 
-<body style="overflow-x: hidden; padding-top: 3%;" oncopy="return false" onpaste="return false" oncut="return false"
- onselectstart="return false">
+<body style="overflow-x: hidden; padding-top: 3%;" oncopy="return false" onpaste="return false" oncut="return false" onselectstart="return false">
     <div class="container">
         <div class="row">
             <div class="col-md-6">
                 <div class="card">
                     <!--WhatsApp QR goes down here...-->
-                    <div id="contactModal" style="display: none;" class="card-body contactQr" data-iziModal-fullscreen="true" data-iziModal-title="WhatsApp QR Code"  data-iziModal-subtitle="Contact" data-iziModal-icon="fa fa-pagelines">
+                    <div id="contactModal" style="display: none;" class="card-body contactQr" data-iziModal-fullscreen="true" data-iziModal-title="WhatsApp QR Code" data-iziModal-subtitle="Contact" data-iziModal-icon="fa fa-pagelines">
                         <br>
                         <div class="text-center">
-                            <img src="./myQrContact.jpeg" style="margin-top: 10%; max-width: 50%; "/><hr>
+                            <img src="./myQrContact.jpeg" style="margin-top: 10%; max-width: 50%; " />
+                            <hr>
                             <i>Scan this code to contact me Directly on WhatsApp</i>
                         </div>
                     </div>
@@ -55,15 +55,14 @@
                         <!--questions goes here...-->
                     </div>
                     <!--Score goes down here...-->
-                    <div class="card-body totalScoreBody" id="scoreModal"  data-iziModal-fullscreen="true" data-iziModal-title="Past Questions Practice Session"  data-iziModal-subtitle="Score" data-iziModal-icon="fa fa-bar-chart-o"></div>
+                    <div class="card-body totalScoreBody" id="scoreModal" data-iziModal-fullscreen="true" data-iziModal-title="Past Questions Practice Session" data-iziModal-subtitle="Score" data-iziModal-icon="fa fa-bar-chart-o"></div>
                     <!--whatsapp icon goes down here...-->
                     <div class="card-body whatsApp">
                         <span style="text-decoration: none; color: #25D366; position: fixed; bottom: 0; right: 0; padding: 3%; z-index: 1;" onclick="$('#contactModal').iziModal('open');"><i class="fa fa-whatsapp fa-4x"></i></span>
                     </div>
                     <!-- Timer goes down here -->
                     <div id="myTimer">
-                        <div class="timeValues" 
-                        style="font-weight: bold; 
+                        <div class="timeValues" style="font-weight: bold; 
                             font-size: medium; 
                             border: 3px solid #25D366; 
                             border-radius: 10%; 
@@ -84,14 +83,7 @@
         // var courseCode = "";
         var errorStat = [];
         var courseCode, qType, yearSem, expQuest;
-        const manageExpQuest = () => {
-    const totQ = expQuest = ($(location).attr("href").split("&totQuest=")[1].split("&")[0] != "All") ? $(location).attr("href").split("&totQuest=")[1].split("&")[0] : "";
-    if (totQ > availableQuestionList.length || totQ == "All") {
-                totQ = availableQuestionList.length
-            }
-return totQ;
-}
-        Object.objsize = function (Myobj) {
+        Object.objsize = function(Myobj) {
             var osize = 0,
                 key;
             for (key in Myobj) {
@@ -99,6 +91,7 @@ return totQ;
             }
             return osize;
         };
+
         function getQuestions(course, year, type) {
             // var collection = selectedText.replace(/ /g, "_").toLowerCase();
             var link =
@@ -106,17 +99,17 @@ return totQ;
                 year.replace("/", "_") + type +
                 "/" +
                 course;
-            
+
             //manage other question bank
             if (type.includes("question_bank")) {
                 link = "https://firestore.googleapis.com/v1beta1/projects/exam-76c31/databases/(default)/documents/" + type +
-                "/" +
-                course;
+                    "/" +
+                    course;
             }
             $.ajax({
                 type: "GET",
                 url: link,
-                success: function (result, status, xhr) {
+                success: function(result, status, xhr) {
                     // console.log(Object.objsize(result["fields"]));
                     for (let index = 1; index <= Object.objsize(result["fields"]); index++) {
                         const element = result["fields"]["question" + index];
@@ -131,7 +124,7 @@ return totQ;
                         // availableQuestionList.join("\n");
                     }
                 },
-                error: function () {
+                error: function() {
                     /*
                     if (
                         noQuestion.includes(
@@ -185,18 +178,17 @@ return totQ;
                             '<label for="' + myNewProcess[myNewProcess.length - 1] + '" id="label-d-' + (index + 1) + '" style="padding-left: 3%; font-size: 18px;"> ' + myNewProcess[myNewProcess.length - 1] + '</label><br>' +
                             '<span class="correct-ans-' + (index + 1) + '" style="display: none;">' + process[process.length - 1] + '</span><br>' +
                             '</fieldset>';
-                        }
-                    else {
+                    } else {
                         var process = element.split("@@@");
                         let filteredAnswer = process[process.length - 1].replace("Ans: ", "<br>");
                         filteredAnswer = filteredAnswer.trim().replace(/\*/g, "");
-                        var htmlElement = 
+                        var htmlElement =
                             '<fieldset>' +
-                                '<legend>' + (index + 1) + ") " + process[0] + 
-                                    '<br><input type="text" name="q-' + (index + 1) + '-opt" placeholder="Type correct answer for question ' + (index + 1) + ' here!" style="width: 99%;margin-top: 1.5%;" />' +
-                                    '<span class="correct-ans-' + (index + 1) + '" style="display: none;">' + filteredAnswer + '</span>' +
-                                '</legend>' +
-                                
+                            '<legend>' + (index + 1) + ") " + process[0] +
+                            '<br><input type="text" name="q-' + (index + 1) + '-opt" placeholder="Type correct answer for question ' + (index + 1) + ' here!" style="width: 99%;margin-top: 1.5%;" />' +
+                            '<span class="correct-ans-' + (index + 1) + '" style="display: none;">' + filteredAnswer + '</span>' +
+                            '</legend>' +
+
                             '</fieldset>'
                     }
                     $(".questionBody").append(htmlElement);
@@ -206,15 +198,15 @@ return totQ;
                 $(".questionBody").append(
                     '<button class="btn btn-success" onclick="checkQuestionNotAnswered()">SUBMIT/Shàlàyé</button>'
                 );
-                $(".pleaseWait").hide(function () {
+                $(".pleaseWait").hide(function() {
                     $(".questionBody").show(function() {
                         notifyNow(
-                            "", (qType != "_pq_objectives") ? "<b style='color: black;'>" + 
-                            courseCode +" Past Questions!</b><br>Start "
-                            + "typing your answers in the appropriate box" : "<b style='color: black;'>" + 
-                            courseCode +" Past Questions!</b><br>Start "
-                            + "selecting the correct options", "success"
-                            );
+                            "", (qType != "_pq_objectives") ? "<b style='color: black;'>" +
+                            courseCode + " Past Questions!</b><br>Start " +
+                            "typing your answers in the appropriate box" : "<b style='color: black;'>" +
+                            courseCode + " Past Questions!</b><br>Start " +
+                            "selecting the correct options", "success"
+                        );
                     });
                 });
             }
@@ -222,7 +214,7 @@ return totQ;
 
         // function to append question to body and start timer
         const startTimer = () => {
-            
+
             try {
                 timer.start();
             } catch (error) {
@@ -295,23 +287,20 @@ return totQ;
                 if (!$("input[name='q-" + i + "-opt']:checked").val() && qType == "_pq_objectives") {
                     noAns.push("Question " + i + "\n");
                     // return false;
-                } 
-                else if ($("input[name='q-" + i + "-opt']").val().length <= 0 && qType != "_pq_objectives") {
+                } else if ($("input[name='q-" + i + "-opt']").val().length <= 0 && qType != "_pq_objectives") {
                     noAns.push("Question " + i + "\n");
                     // return false;
                 }
                 i++;
             }
-            if (noAns.length > 0  && qType == "_pq_objectives") {
+            if (noAns.length > 0 && qType == "_pq_objectives") {
                 // console.log(noAns.join("\n"));
                 // alert("Abeg go back and answer the following question(s), you never finish practice:\n" + noAns.join(""));
                 notifyNow("", "<b style='color: black;'>E be like say you don skip question</b><br>Abeg go back and answer the following question(s), you never finish practice:<br>" + noAns.join("<br>"), "error");
-            } 
-            else if (noAns.length > 0  && qType != "_pq_objectives") {
+            } else if (noAns.length > 0 && qType != "_pq_objectives") {
                 // alert("Biko crosscheck again, you never attempt:\n" + noAns.join(""));
                 notifyNow("", "<b style='color: black;'>E be like say you don skip question</b><br>Biko crosscheck again, you never attempt:<br>" + noAns.join("<br>"), "error");
-            }
-            else {
+            } else {
                 //call marking function
                 // console.log("mark");
                 markAndScore();
@@ -319,20 +308,20 @@ return totQ;
         }
 
         function markAndScore() {
+            expQuest = ($(location).attr("href").split("&totQuest=")[1].split("&")[0] != "All") ? $(location).attr("href").split("&totQuest=")[1].split("&")[0] : randomQuestionSet.length;
             if ($(".totalScoreBody").text().length == 0) {
                 let totScore = 0;
-                expQuest = manageExpQuest();
                 for (let i = 1; i <= expQuest; i++) {
                     let correctAns = (qType != "_pq_objectives") ? $(".correct-ans-" + i).text() : $(".correct-ans-" + i).text().replace(/Ans: /, "");
                     let selectedAns = (qType != "_pq_objectives") ? $("input[name='q-" + i + "-opt']") : $("input[name='q-" + i + "-opt']:checked");
-                    let label = (qType != "_pq_objectives") ? $("input[name='q-" + i + "-opt']") : $("#"+selectedAns.attr("id").replace(/opt/, "label"));
+                    let label = (qType != "_pq_objectives") ? $("input[name='q-" + i + "-opt']") : $("#" + selectedAns.attr("id").replace(/opt/, "label"));
                     if (
                         selectedAns.val().toLowerCase() == correctAns.toLowerCase() || selectedAns.val().toLowerCase().includes(correctAns.toLowerCase())
-                        ) {
-                            //show option for fbq
-                            (qType != "_pq_objectives") ? $(".correct-ans-" + i).css("color", "green").append(
-                                '<i class="fa fa-check"></i>'
-                            ).show() : "";
+                    ) {
+                        //show option for fbq
+                        (qType != "_pq_objectives") ? $(".correct-ans-" + i).css("color", "green").append(
+                            '<i class="fa fa-check"></i>'
+                        ).show(): "";
                         //mark as green
                         label.css("color", "green");
                         // $("input[name='q-" + i + "-opt']").css("color", "green");
@@ -405,16 +394,13 @@ return totQ;
             const qPerMin = Math.round(timer.getTotalTimeValues().minutes / totalQuestions);
             const qPerSecs = Math.round(timer.getTotalTimeValues().seconds / totalQuestions);
             // return `On the average you dey answer ${qPerSecs} question(s) per second`;
-            if(qPerDay > 0) {
+            if (qPerDay > 0) {
                 return `On the average you dey use ${qPerDay} day(s) answer 1 question`;
-            }
-            else if(qPerHour > 0) {
+            } else if (qPerHour > 0) {
                 return `On the average you dey use ${qPerHour} hour(s) answer 1 question`;
-            }
-            else if(qPerMin > 0) {
+            } else if (qPerMin > 0) {
                 return `On the average you dey use ${qPerMin} minute(s) answer 1 question`;
-            }
-            else if(qPerSecs > 0) {
+            } else if (qPerSecs > 0) {
                 return `On the average you dey use ${qPerSecs} second(s) answer 1 question`;
             }
         }
@@ -426,17 +412,13 @@ return totQ;
             const secs = timer.getTimeValues().seconds;
             if (days != 0) {
                 return `You spent a total of ${days} day(s), ${hours} hours, ${mins} minute(s) and ${secs} second(s) on ${totalQuestions} questions.`;
-            }
-            else if (hours != 0) {
+            } else if (hours != 0) {
                 return `You spent a total of ${hours} hours, ${mins} minute(s) and ${secs} second(s) on ${totalQuestions} questions.`;
-            }
-            else if (mins != 0) {
+            } else if (mins != 0) {
                 return `You spent a total of ${mins} minute(s) and ${secs} second(s) on ${totalQuestions} questions.`;
-            }
-            else if (secs != 0) {
+            } else if (secs != 0) {
                 return `You spent a total of ${secs} second(s) on ${totalQuestions} questions.`;
-            }
-            else {
+            } else {
                 return "How you take do am? Your timer no dey run...";
             }
         }
@@ -449,25 +431,25 @@ return totQ;
                 '<p class="text-center">' + getAverageTime(maxQuestions) + '</p>' +
                 '<p class="text-center">Your total score for this practice session is <b>' +
                 totalScore +
-                '</b> out of <b>'+maxQuestions+'</b><br>' +
+                '</b> out of <b>' + maxQuestions + '</b><br>' +
                 'If to say this na exam, you don score like <b>' +
                 Math.round((totalScore / (maxQuestions)) * 100) +
                 '%</b> of your ' + tempType + ' be that...<br>' +
                 // '<i>IF YOU WAN REASON SOME PQ AND STUDY MORE, VISIT <a href="">"STUDY PAST QUESTIONS"</a></i><br><hr>' +
                 //'<i>IF YOU SURE SAY YOU GET LIVER <a href="">"GO AND PRACTICE FBQ"</a></i><br><hr>' +
-                'BUT YOU FIT <button class="btn btn-warning" onclick="showMyAnswers()">Check Corrections</button><br><br>'+
-                'OR <a href="./start.html"><button class="btn btn-danger">Restart Practice</button></a>'+
-            '</b></p>';
+                'BUT YOU FIT <button class="btn btn-warning" onclick="showMyAnswers()">Check Corrections</button><br><br>' +
+                'OR <a href="./start.html"><button class="btn btn-danger">Restart Practice</button></a>' +
+                '</b></p>';
             $(".totalScoreBody").append(html);
             $("#scoreModal").iziModal();
             $("#scoreModal").iziModal("open");
-            notifyNow("", 
-                "<b style='color: black;'>"+courseCode+" Submitted!</b><br>" +
+            notifyNow("",
+                "<b style='color: black;'>" + courseCode + " Submitted!</b><br>" +
                 "Time: <b>" + $('.timeValues').text() + "</b><br>" +
-                "Average Time: <b>" + getAverageTime(maxQuestions).split("average")[1] +"</b><br>" +
-                "Total Score: <b>"+ totalScore + "</b> out of <b>"+maxQuestions+
+                "Average Time: <b>" + getAverageTime(maxQuestions).split("average")[1] + "</b><br>" +
+                "Total Score: <b>" + totalScore + "</b> out of <b>" + maxQuestions +
                 "</b><br>Total %: <b>" + Math.round((totalScore / (maxQuestions)) * 100) + "%</b>", "success"
-                );
+            );
             timer.stop();
         }
 
@@ -506,7 +488,7 @@ return totQ;
                         position: 'bottomRight',
                     });
                     break;
-                
+
                 case 'warning':
                     iziToast.warning({
                         title: title,
@@ -528,41 +510,39 @@ return totQ;
                 default:
                     break;
             }
-            
+
         }
 
         const questionType = () => {
             let myType;
             if ($(location).attr("href").split("&type=")[1].split("&")[0].includes("question_bank")) {
                 myType = $(location).attr("href").split("&type=")[1].split("&")[0];
-            }
-            else if ($(location).attr("href").split("&type=")[1].split("&")[0] == "fbq") {
+            } else if ($(location).attr("href").split("&type=")[1].split("&")[0] == "fbq") {
                 myType = "_pq_fbq";
-            } 
-            else {
+            } else {
                 myType = "_pq_objectives";
             }
             return myType;
         }
 
-        $(document).ready(function () {
+        $(document).ready(function() {
             courseCode = $(location).attr("href").split("?course=")[1].split("&")[0];
             qType = questionType();
-            
+
             yearSem = $(location).attr("href").split("&yearSem=")[1].split("&")[0];
-            
+
             expQuest = ($(location).attr("href").split("&totQuest=")[1].split("&")[0] != "All") ? $(location).attr("href").split("&totQuest=")[1].split("&")[0] : "";
-            
+
             qType = (qType.includes("bank")) ? '' : qType.toUpperCase().replace(/_/g, " ");
 
-            var tEle = 
-            '<h2 class="text-center">' 
-                + expQuest 
-                + ' RANDOM QUESTIONS FROM ' 
-                + courseCode 
-                + " " + yearSem.replace(/%20/g, " ") + ' ' + 
-                qType
-                +  ' PAST QUESTION</h2><hr>';
+            var tEle =
+                '<h2 class="text-center">' +
+                expQuest +
+                ' RANDOM QUESTIONS FROM ' +
+                courseCode +
+                " " + yearSem.replace(/%20/g, " ") + ' ' +
+                qType +
+                ' PAST QUESTION</h2><hr>';
             $(".practiceTitle").append(tEle);
             $(".pleaseWait").show();
             $(".questionBody").hide();
