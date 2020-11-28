@@ -536,13 +536,7 @@
             qType = (qType.includes("bank")) ? '' : qType.toUpperCase().replace(/_/g, " ");
 
             var tEle =
-                '<h2 class="text-center">' +
-                expQuest +
-                ' RANDOM QUESTIONS FROM ' +
-                courseCode +
-                " " + yearSem.replace(/%20/g, " ") + ' ' +
-                qType +
-                ' PAST QUESTION</h2><hr>';
+                `<h2 class="text-center">${expQuest} RANDOM QUESTIONS FROM ${courseCode} ${yearSem.replace(/%20/g, " ")} ${qType} PAST QUESTION</h2><hr>`;
             $(".practiceTitle").append(tEle);
             $(".pleaseWait").show();
             $(".questionBody").hide();
