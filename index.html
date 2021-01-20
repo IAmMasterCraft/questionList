@@ -69,66 +69,7 @@
             </div>
         </div>
     </div>
-    <script>
-        var availableDataList = [];
-        var availableCourseList = [];
-        var availableQuestionList = [];
-        var nextPage = "";
-        var prevPage = "";
-
-        function fetchesAvailableContent() {
-            $.get("https://firestore.googleapis.com/v1beta1/projects/exam-76c31/databases/(default)/documents/links/tma", function (result, status, xhr) {
-                // console.log(result);
-                for (let index = 0; index < Object.objsize(result['fields']); index++) {
-                    const element = result['fields'][index];
-                    // console.log(element['stringValue']);
-                    availableDataList.push(element['stringValue']);
-                }
-            });
-        }
-
-        Object.objsize = function (Myobj) {
-            var osize = 0,
-                key;
-            for (key in Myobj) {
-                if (Myobj.hasOwnProperty(key)) osize++;
-            }
-            return osize;
-        };
-
-        function appendAvailableData(availableData) {
-            for (let index = 0; index < availableData.length; index++) {
-                const element = availableData[index].replace(/_/g, " ").toUpperCase();
-                var htmlElement =
-                    '<div class="col-md-4 bg-primary" style="padding: 5%; margin: 2.5%; border-radius: 10%;"><a style="text-decoration: none;" href="./course.html?module=' +
-                    availableData[index] +
-                    '"><span class="bg-icon " style="color: white; padding: 3%;"><i class="fa fa-database fa-4x"></i></span><br><span style="font-size: 30px; color: white;">' +
-                    element + '</span></a></div>';
-                $(".pleaseWait").hide();
-                $("#parent").append(htmlElement);
-            }
-            var pqEle =
-                '<div class="col-md-4 bg-primary" style="padding: 5%; margin: 2.5%; border-radius: 10%;"><a style="text-decoration: none;" href="./examPrep/start.html">' +
-                '<span class="bg-icon " style="color: white; padding: 3%;"><i class="fa fa-database fa-4x"></i></span><br><span style="font-size: 30px; color: white;">' +
-                'PRACTICE PAST QUESTIONS</span></a></div>';
-            $("#parent").append(pqEle);
-        }
-
-        // interval for available data
-        var dataClick = setInterval(checkDataList, 3000);
-
-        function checkDataList() {
-            if (availableDataList.length > 0) {
-                clearInterval(dataClick);
-                appendAvailableData(availableDataList);
-            }
-        }
-
-        $(document).ready(function () {
-            $(".pleaseWait").show();
-            fetchesAvailableContent();
-        });
-    </script>
+    
 </body>
 
 </html>
