@@ -426,7 +426,6 @@
         function showScore(totalScore) {
             const maxQuestions = (expQuest == "") ? randomQuestionSet.length : expQuest;
             const tempType = (qType != "_pq_objectives") ? "Fill-in-the-Blank Questions (FBQ\'s)" : "Multiple Choice Questions (MCQ\'s)";
-            const READY = scoreAnalysis(Math.round((totalScore / (maxQuestions)) * 100));
             var html =
                 '<p class="text-center">' + timeSpent(maxQuestions) + '</p>' +
                 '<p class="text-center">' + getAverageTime(maxQuestions) + '</p>' +
@@ -436,11 +435,9 @@
                 'If to say this na exam, you don score like <b>' +
                 Math.round((totalScore / (maxQuestions)) * 100) +
                 '%</b> of your ' + tempType + ' be that...<br>' +
-                'Omoooo, your readiness for this exam na like <b>' +
-                READY +
                 // '<i>IF YOU WAN REASON SOME PQ AND STUDY MORE, VISIT <a href="">"STUDY PAST QUESTIONS"</a></i><br><hr>' +
                 //'<i>IF YOU SURE SAY YOU GET LIVER <a href="">"GO AND PRACTICE FBQ"</a></i><br><hr>' +
-                '%</b><br/>BUT YOU FIT <button class="btn btn-warning" onclick="showMyAnswers()">Check Corrections</button> sha<br><br>' +
+                'BUT YOU FIT <button class="btn btn-warning" onclick="showMyAnswers()">Check Corrections</button><br><br>' +
                 'OR <a href="./start.html"><button class="btn btn-danger">Restart Practice</button></a>' +
                 '</b></p>';
             $(".totalScoreBody").append(html);
@@ -450,8 +447,7 @@
                 "<b style='color: black;'>" + courseCode + " Submitted!</b><br>" +
                 "Time: <b>" + $('.timeValues').text() + "</b><br>" +
                 "Average Time: <b>" + getAverageTime(maxQuestions).split("average")[1] + "</b><br>" +
-                "Total Score: <b>" + totalScore + "</b> out of <b>" + maxQuestions + "</b>" +
-                "Readiness: <b>" + READY + "%</b>" +
+                "Total Score: <b>" + totalScore + "</b> out of <b>" + maxQuestions +
                 "</b><br>Total %: <b>" + Math.round((totalScore / (maxQuestions)) * 100) + "%</b>", "success"
             );
             timer.stop();
@@ -515,10 +511,6 @@
                     break;
             }
 
-        }
-
-        const scoreAnalysis = (totalPercentage) => {
-            return Math.round(totalPercentage / 4);
         }
 
         const questionType = () => {
