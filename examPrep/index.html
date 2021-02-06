@@ -435,9 +435,11 @@
                 'If to say this na exam, you don score like <b>' +
                 Math.round((totalScore / (maxQuestions)) * 100) +
                 '%</b> of your ' + tempType + ' be that...<br>' +
+                'Omoooo, your readiness for this exam na like <b>' +
+                scoreAnalysis(Math.round((totalScore / (maxQuestions)) * 100)) +
                 // '<i>IF YOU WAN REASON SOME PQ AND STUDY MORE, VISIT <a href="">"STUDY PAST QUESTIONS"</a></i><br><hr>' +
                 //'<i>IF YOU SURE SAY YOU GET LIVER <a href="">"GO AND PRACTICE FBQ"</a></i><br><hr>' +
-                'BUT YOU FIT <button class="btn btn-warning" onclick="showMyAnswers()">Check Corrections</button><br><br>' +
+                '%</b><br/>BUT YOU FIT <button class="btn btn-warning" onclick="showMyAnswers()">Check Corrections</button> sha<br><br>' +
                 'OR <a href="./start.html"><button class="btn btn-danger">Restart Practice</button></a>' +
                 '</b></p>';
             $(".totalScoreBody").append(html);
@@ -511,6 +513,10 @@
                     break;
             }
 
+        }
+
+        const scoreAnalysis = (totalPercentage) => {
+            return Math.round(totalPercentage / 4);
         }
 
         const questionType = () => {
