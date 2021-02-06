@@ -221,8 +221,9 @@ let courseConfig = {
     },
 
     'GST204': {
+        '2019/1': ['fbq'],
         '2019/2': ['fbq'],
-
+        'QUESTION BANKS': ['question_bank_1', ],
     },
 
 }
