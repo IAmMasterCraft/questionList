@@ -226,4 +226,8 @@ let courseConfig = {
         'QUESTION BANKS': ['question_bank_1', ],
     },
 
+    'CIT208': {
+        'QUESTION SET': ['objectives_1', 'objectives_2', 'objectives_3', ],
+    },
+
 }
