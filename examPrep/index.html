@@ -106,6 +106,14 @@
                     "/" +
                     course;
             }
+
+            //manage other question set
+            if (type.includes("objectives_")) {
+                link = "https://firestore.googleapis.com/v1beta1/projects/exam-76c31/databases/(default)/documents/" + type +
+                    "/" +
+                    course;
+            }
+
             $.ajax({
                 type: "GET",
                 url: link,
@@ -156,7 +164,7 @@
                 const maxQuestions = (totalQuestionsNeeded == "") ? courseList.length : totalQuestionsNeeded;
                 for (let j = 0; j < maxQuestions; j++) {
                     const element = courseList[j];
-                    if (qType == "_pq_objectives") {
+                    if (qType == "_pq_objectives" || qType.includes("objectives_")) {
                         myNewProcess = [];
                         var process = element
                             .replace(/ \[op/g, "")
@@ -201,7 +209,7 @@
                 $(".pleaseWait").hide(function() {
                     $(".questionBody").show(function() {
                         notifyNow(
-                            "", (qType != "_pq_objectives") ? "<b style='color: black;'>" +
+                            "", (qType != "_pq_objectives" || !qType.includes("objectives_")) ? "<b style='color: black;'>" +
                             courseCode + " Past Questions!</b><br>Start " +
                             "typing your answers in the appropriate box" : "<b style='color: black;'>" +
                             courseCode + " Past Questions!</b><br>Start " +
@@ -280,46 +288,92 @@
         }
 
         function checkQuestionNotAnswered() {
+            expQuest = manageTotalQuestion();
             const maxQuestions = (expQuest == "") ? randomQuestionSet.length : expQuest;
             let i = 1;
             var noAns = [];
             while (i <= maxQuestions) {
-                if (!$("input[name='q-" + i + "-opt']:checked").val() && qType == "_pq_objectives") {
+                if (!$("input[name='q-" + i + "-opt']:checked").val() && (qType == "_pq_objectives" || qType.includes("objectives_"))) {
                     noAns.push("Question " + i + "\n");
                     // return false;
-                } else if ($("input[name='q-" + i + "-opt']").val().length <= 0 && qType != "_pq_objectives") {
+                } else if ($("input[name='q-" + i + "-opt']").val().length <= 0 && (qType != "_pq_objectives" || qType.includes("objectives_"))) {
                     noAns.push("Question " + i + "\n");
                     // return false;
                 }
                 i++;
             }
-            if (noAns.length > 0 && qType == "_pq_objectives") {
+            if (noAns.length > 0 && (qType == "_pq_objectives" || qType.includes("objectives_"))) {
                 // console.log(noAns.join("\n"));
                 // alert("Abeg go back and answer the following question(s), you never finish practice:\n" + noAns.join(""));
                 notifyNow("", "<b style='color: black;'>E be like say you don skip question</b><br>Abeg go back and answer the following question(s), you never finish practice:<br>" + noAns.join("<br>"), "error");
-            } else if (noAns.length > 0 && qType != "_pq_objectives") {
+            } else if (noAns.length > 0 && (qType != "_pq_objectives" || !qType.includes("objectives_"))) {
                 // alert("Biko crosscheck again, you never attempt:\n" + noAns.join(""));
                 notifyNow("", "<b style='color: black;'>E be like say you don skip question</b><br>Biko crosscheck again, you never attempt:<br>" + noAns.join("<br>"), "error");
             } else {
                 //call marking function
                 // console.log("mark");
-                markAndScore();
+                (qType.includes("objectives_")) ? markQuestionSet(): markAndScore();
+            }
+        }
+
+        const markQuestionSet = () => {
+            expQuest = manageTotalQuestion();
+            if ($(".totalScoreBody").text().length == 0) {
+                let totalScore = 0;
+                let correctAns, selectedAns, label;
+                //loop through question&answers
+                for (let index = 1; index <= expQuest; index++) {
+                    //get correct ans for a question
+                    correctAns = $(`.correct-ans-${index}`).text().replace(/Ans: /, "");
+                    //get selected/checked ans object for a question
+                    selectedAnsObj = $(`input[name='q-${index}-opt']:checked`);
+                    //get label object for the checked ans for a question
+                    label = $(`#${selectedAnsObj.attr("id").replace(/opt/, "label")}`);
+                    if (selectedAnsObj.val().toLowerCase() == correctAns.toLowerCase()) {
+                        //add correct mark icon to label && change label to green
+                        label.append(`<i class="fa fa-check"></i>`).css("color", "green");
+                        //increment total score by 1
+                        totalScore -= -1;
+                    } else {
+                        //add wrong mark icon to label && change label to red
+                        label.append(`<i class="fa fa-close"></i>`).css("color", "red");
+                        // loop through options and tick the correct ans
+                        [...Array(4).keys()].forEach((input) => {
+                            const inputObj = $(`input[name='q-${index}-opt']`);
+                            if (inputObj[input].value.toLowerCase() == correctAns.toLowerCase()) {
+                                $("#" + inputObj[input].id.replace(/opt/, "label"))
+                                    .append(`<i class="fa fa-check"></i>`)
+                                    .css("color", "green");
+                            }
+                        });
+                    }
+                }
+                //pause timer
+                timer.pause;
+                //show score
+                showScore(totalScore);
             }
         }
 
         function markAndScore() {
-            expQuest = ($(location).attr("href").split("&totQuest=")[1].split("&")[0] != "All") ? $(location).attr("href").split("&totQuest=")[1].split("&")[0] : randomQuestionSet.length;
+            // expQuest = ($(location).attr("href").split("&totQuest=")[1].split("&")[0] != "All") ? $(location).attr("href").split("&totQuest=")[1].split("&")[0] : randomQuestionSet.length;
             if ($(".totalScoreBody").text().length == 0) {
                 let totScore = 0;
+                let correctAns;
+                let selectedAns;
+                let label;
                 for (let i = 1; i <= expQuest; i++) {
-                    let correctAns = (qType != "_pq_objectives") ? $(".correct-ans-" + i).text() : $(".correct-ans-" + i).text().replace(/Ans: /, "");
-                    let selectedAns = (qType != "_pq_objectives") ? $("input[name='q-" + i + "-opt']") : $("input[name='q-" + i + "-opt']:checked");
-                    let label = (qType != "_pq_objectives") ? $("input[name='q-" + i + "-opt']") : $("#" + selectedAns.attr("id").replace(/opt/, "label"));
+                    // let correctAns = (qType != "_pq_objectives" || !qType.includes("objectives_")) ? $(".correct-ans-" + i).text() : $(".correct-ans-" + i).text().replace(/Ans: /g, "");
+                    correctAns = $(".correct-ans-" + i).text().replace(/Ans: /g, "");
+                    selectedAns = (qType != "_pq_objectives" || !qType.includes("objectives_")) ? $("input[name='q-" + i + "-opt']") : $("input[name='q-" + i + "-opt']:checked");
+                    console.log(`${selectedAns}\n`);
+                    console.log(`${correctAns}\n`);
+                    label = (qType != "_pq_objectives" || !qType.includes("objectives_")) ? $("input[name='q-" + i + "-opt']") : $("#" + selectedAns.attr("id").replace(/opt/, "label"));
                     if (
                         selectedAns.val().toLowerCase() == correctAns.toLowerCase() || selectedAns.val().toLowerCase().includes(correctAns.toLowerCase())
                     ) {
                         //show option for fbq
-                        (qType != "_pq_objectives") ? $(".correct-ans-" + i).css("color", "green").append(
+                        (qType != "_pq_objectives" || !qType.includes("objectives_")) ? $(".correct-ans-" + i).css("color", "green").append(
                             '<i class="fa fa-check"></i>'
                         ).show(): "";
                         //mark as green
@@ -346,30 +400,30 @@
                         // $("input[name='q-" + i + "-opt']").append(
                         //     '<i class="fa fa-close"></i>'
                         // );
-                        if (qType == "_pq_objectives") {
+                        if (qType == "_pq_objectives" || qType.includes("objectives_")) {
                             //highlight correct ans
-                            if ($("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-a-")).text().replace(/ /, "") == correctAns && qType == "_pq_objectives") {
+                            if ($("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-a-")).text().replace(/ /, "") == correctAns && (qType == "_pq_objectives" || qType.includes("objectives_"))) {
                                 $("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-a-")).css("color", "green").append(
                                     '<i class="fa fa-check"></i>'
                                 );
                             }
-                            if ($("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-b-")).text().replace(/ /, "") == correctAns && qType == "_pq_objectives") {
+                            if ($("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-b-")).text().replace(/ /, "") == correctAns && (qType == "_pq_objectives" || qType.includes("objectives_"))) {
                                 $("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-b-")).css("color", "green").append(
                                     '<i class="fa fa-check"></i>'
                                 );
                             }
-                            if ($("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-c-")).text().replace(/ /, "") == correctAns && qType == "_pq_objectives") {
+                            if ($("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-c-")).text().replace(/ /, "") == correctAns && (qType == "_pq_objectives" || qType.includes("objectives_"))) {
                                 $("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-c-")).css("color", "green").append(
                                     '<i class="fa fa-check"></i>'
                                 );
                             }
-                            if ($("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-d-")).text().replace(/ /, "") == correctAns && qType == "_pq_objectives") {
+                            if ($("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-d-")).text().replace(/ /, "") == correctAns && (qType == "_pq_objectives" || qType.includes("objectives_"))) {
                                 $("#" + selectedAns.attr("id").replace(/opt/, "label").replace(/-[a-z]-/, "-d-")).css("color", "green").append(
                                     '<i class="fa fa-check"></i>'
                                 );
                             }
                         }
-                        if (qType != "_pq_objectives") {
+                        if (qType != "_pq_objectives" || !qType.includes("objectives_")) {
                             $(".correct-ans-" + i).css("color", "green").append(
                                 '<i class="fa fa-check"></i>'
                             ).show();
@@ -425,7 +479,7 @@
 
         function showScore(totalScore) {
             const maxQuestions = (expQuest == "") ? randomQuestionSet.length : expQuest;
-            const tempType = (qType != "_pq_objectives") ? "Fill-in-the-Blank Questions (FBQ\'s)" : "Multiple Choice Questions (MCQ\'s)";
+            const tempType = (qType != "_pq_objectives" || !qType.includes("objectives_")) ? "Fill-in-the-Blank Questions (FBQ\'s)" : "Multiple Choice Questions (MCQ\'s)";
             var html =
                 '<p class="text-center">' + timeSpent(maxQuestions) + '</p>' +
                 '<p class="text-center">' + getAverageTime(maxQuestions) + '</p>' +
@@ -513,12 +567,18 @@
 
         }
 
+        const manageTotalQuestion = () => {
+            return $("legend").length;
+        }
+
         const questionType = () => {
             let myType;
             if ($(location).attr("href").split("&type=")[1].split("&")[0].includes("question_bank")) {
                 myType = $(location).attr("href").split("&type=")[1].split("&")[0];
             } else if ($(location).attr("href").split("&type=")[1].split("&")[0] == "fbq") {
                 myType = "_pq_fbq";
+            } else if ($(location).attr("href").split("&type=")[1].split("&")[0].includes("objectives_")) {
+                myType = $(location).attr("href").split("&type=")[1].split("&")[0];
             } else {
                 myType = "_pq_objectives";
             }
@@ -533,9 +593,10 @@
 
             expQuest = ($(location).attr("href").split("&totQuest=")[1].split("&")[0] != "All") ? $(location).attr("href").split("&totQuest=")[1].split("&")[0] : "";
 
-            qType = (qType.includes("bank")) ? '' : qType.toUpperCase().replace(/_/g, " ");
+            qType = (qType.includes("bank") || qType.includes("set")) ? '' : qType.toUpperCase().replace(/_/g, " ");
+            if (qType)
 
-            var tEle =
+                var tEle =
                 `<h2 class="text-center">${expQuest} RANDOM QUESTIONS FROM ${courseCode} ${yearSem.replace(/%20/g, " ")} ${qType} PAST QUESTION</h2><hr>`;
             $(".practiceTitle").append(tEle);
             $(".pleaseWait").show();
