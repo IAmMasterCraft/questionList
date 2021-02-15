@@ -227,7 +227,7 @@ let courseConfig = {
     },
 
     'CIT208': {
-        'QUESTION SET': ['objectives_1', 'objectives_2', 'objectives_3', ],
+        'QUESTION SET': ['objectives_1', 'objectives_2', 'objectives_3', 'objectives_4', 'objectives_5', ],
     },
 
 }
