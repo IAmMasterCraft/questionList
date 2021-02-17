@@ -312,7 +312,13 @@
             } else {
                 //call marking function
                 // console.log("mark");
-                (qType.includes("objectives_")) ? markQuestionSet(): markAndScore();
+                if (qType.includes("objectives_")) {
+                    markQuestionSet();
+                } else if (qType == "_pq_objectives") {
+                    markAndScore();
+                } else {
+                    markFBQ();
+                }
             }
         }
 
@@ -357,6 +363,79 @@
             }
         }
 
+        const markFBQ = () => {
+            if ($(".totalScoreBody").text().length == 0) {
+                let totalScore = 0;
+                let correctAns, answerInput, label;
+                //loop through question&answers
+                for (let i = 1; i <= expQuest; i++) {
+                    //get correct ans for a question
+                    correctAns = $(".correct-ans-" + i).text().replace(/Ans: /g, "");
+                    //get ans object input for a question
+                    answerInput = $("input[name='q-" + i + "-opt']");
+                    //similarity percentage
+                    const similarityPercentage = compareTwoStrings(
+                        correctAns.toLowerCase(),
+                        answerInput.val().toLowerCase()
+                    );
+                    //get label object for the ans input for a question
+                    label = $(".correct-ans-" + i);
+                    //for fbq's label must always be marked && checked as green irrespective of score
+                    label.css("color", "green")
+                        .append(
+                            `<i class="fa fa-check"></i> 
+                            <h4>
+                                ${(similarityPercentage < 100) ? "Check the spelling/correct answer" : "Good job"}
+                                ${answerInput.val()} is
+                                ${similarityPercentage}% similar to
+                                ${correctAns}
+                            </h4>`
+                        ).show()
+                        //marking condition {set similarity >= 50%}
+                    if (
+                        (similarityPercentage) >= 50
+                    ) {
+                        //change answerInput color to green
+                        answerInput.css("color", "green");
+                        //increment total score by 1
+                        totalScore -= -1;
+                    } else {
+                        //change answerInput to red
+                        answerInput.css("color", "red");
+                    }
+                }
+                //pause timer
+                timer.pause;
+                //show score
+                showScore(totalScore);
+            } else {
+                $("#scoreModal").iziModal("open");
+            }
+        }
+
+        const compareTwoStrings = (firstString, secondString) => {
+            firstString = firstString.replace(/\s+/g, "");
+            secondString = secondString.replace(/\s+/g, "");
+            if (firstString === secondString) return 100;
+            let firstBigrams = new Map();
+            for (let i = 0; i < firstString.length - 1; i++) {
+                const bigram = firstString.substring(i, i + 2);
+                const count = firstBigrams.has(bigram) ? firstBigrams.get(bigram) + 1 : 1;
+                firstBigrams.set(bigram, count);
+            };
+            let intersectionSize = 0;
+            for (let i = 0; i < secondString.length - 1; i++) {
+                const bigram = secondString.substring(i, i + 2);
+                const count = firstBigrams.has(bigram) ? firstBigrams.get(bigram) : 0;
+                if (count > 0) {
+                    firstBigrams.set(bigram, count - 1);
+                    intersectionSize++;
+                }
+            }
+            const similarity = (2.0 * intersectionSize) / (firstString.length + secondString.length - 2) * 100;
+            return Math.round(similarity);
+        }
+
         function markAndScore() {
             // expQuest = ($(location).attr("href").split("&totQuest=")[1].split("&")[0] != "All") ? $(location).attr("href").split("&totQuest=")[1].split("&")[0] : randomQuestionSet.length;
             if ($(".totalScoreBody").text().length == 0) {
@@ -368,8 +447,8 @@
                     // let correctAns = (qType != "_pq_objectives" || !qType.includes("objectives_")) ? $(".correct-ans-" + i).text() : $(".correct-ans-" + i).text().replace(/Ans: /g, "");
                     correctAns = $(".correct-ans-" + i).text().replace(/Ans: /g, "");
                     selectedAns = (qType != "_pq_objectives" || !qType.includes("objectives_")) ? $("input[name='q-" + i + "-opt']") : $("input[name='q-" + i + "-opt']:checked");
-                    console.log(`${selectedAns}\n`);
-                    console.log(`${correctAns}\n`);
+                    // console.log(`${selectedAns}\n`);
+                    // console.log(`${correctAns}\n`);
                     label = (qType != "_pq_objectives" || !qType.includes("objectives_")) ? $("input[name='q-" + i + "-opt']") : $("#" + selectedAns.attr("id").replace(/opt/, "label"));
                     if (
                         selectedAns.val().toLowerCase() == correctAns.toLowerCase() || selectedAns.val().toLowerCase().includes(correctAns.toLowerCase())
