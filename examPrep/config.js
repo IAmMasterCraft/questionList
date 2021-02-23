@@ -236,4 +236,9 @@ let courseConfig = {
         'QUESTION BANKS': ['question_bank_1', 'question_bank_2', 'question_bank_3', 'question_bank_4', 'question_bank_5', 'question_bank_6', 'question_bank_7', 'question_bank_8', 'question_bank_9', 'question_bank_10', 'question_bank_10', ],
     },
 
+    'STT211': {
+        'QUESTION SET': ['objectives_1', ],
+        'QUESTION BANKS': ['question_bank_1', ],
+    },
+
 }
