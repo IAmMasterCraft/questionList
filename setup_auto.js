@@ -6,4 +6,5 @@ const allCourses = {
     "RU1VOTE1": true,
     "U085NTk=": true,
     "TFRHMTgzNg==": true,
+    "Sk9FNjE5": true,
 };
