@@ -7,4 +7,5 @@ const allCourses = {
     "U085NTk=": true,
     "TFRHMTgzNg==": true,
     "Sk9FNjE5": true,
+    "SkhOMTAzNg==": true,
 };
