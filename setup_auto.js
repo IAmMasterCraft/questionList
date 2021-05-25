@@ -3,4 +3,5 @@ const allCourses = {
     "U01PMTAwNA==": true,
     "QVNUMTAxNQ==": true,
     "QUVMMTIwMg==": true,
+    "TUxBMTcyNQ==": true,
 };
