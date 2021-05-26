@@ -4,4 +4,5 @@ const allCourses = {
     "QVNUMTAxNQ==": true,
     "QUVMMTIwMg==": true,
     "TUxBMTcyNQ==": true,
+    "SlNBMTgwMw==": true,
 };
