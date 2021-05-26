@@ -5,4 +5,5 @@ const allCourses = {
     "QUVMMTIwMg==": true,
     "TUxBMTcyNQ==": true,
     "SlNBMTgwMw==": true,
+    "U0FNMTIx": true,
 };
