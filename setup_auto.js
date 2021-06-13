@@ -3,6 +3,7 @@ const allCourses = {
     "Q0hPOTc2OQ==": true,
     "QUdTMTkyNg==": true,
     "U0FNMTk0Ng==": true,
+    "QUdUMTcyOQ==": true,
     /*"U01PMTAwNA==": true,
     "QVNUMTAxNQ==": true,
     "QUVMMTIwMg==": true,
