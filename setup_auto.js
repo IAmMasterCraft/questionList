@@ -4,6 +4,7 @@ const allCourses = {
     "QUdTMTkyNg==": true,
     "U0FNMTk0Ng==": true,
     "QUdUMTcyOQ==": true,
+    "R0REMTkyMg==": true,
     /*"U01PMTAwNA==": true,
     "QVNUMTAxNQ==": true,
     "QUVMMTIwMg==": true,
